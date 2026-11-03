@@ -5,7 +5,8 @@ import { useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, BadgeCheck, BookOpen, Check, FlaskConical, Handshake, Landmark, Plus, Sparkles, Trash2, UserRound, Users } from "lucide-react";
 import { ALL_SKILLS, Grant, Person, Publication, SECTORS, completeness } from "@/lib/data";
 import { useStore } from "@/lib/store";
-import { Badge, Button, Card, Modal, Toggle, cn, inputCls } from "./ui";
+import { Avatar, Badge, Button, Card, Modal, Toggle, cn, inputCls } from "./ui";
+import { PhotoUpload } from "./PhotoUpload";
 
 const STEPS = [
   { title: "Data diri & jabatan", icon: UserRound },
@@ -124,6 +125,7 @@ export function LecturerWizard({ me }: { me: Person }) {
               <div className="flex items-center gap-3 rounded-xl bg-sky-50 p-3 text-sm text-sky-900">
                 <BadgeCheck size={18} className="shrink-0" /> Akun dosen dibuat melalui undangan departemen dan sudah terverifikasi.
               </div>
+              <PhotoUpload name={d.name} value={d.photo} onChange={(v) => up({ photo: v })} />
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Nama lengkap dan gelar"><input className={cn(inputCls, "bg-ink-50 text-ink-500")} value={d.name} readOnly /></Field>
                 <Field label="NIDN / NIDK"><input className={inputCls} value={d.nidn ?? ""} onChange={(e) => up({ nidn: e.target.value })} /></Field>
@@ -290,8 +292,13 @@ export function LecturerWizard({ me }: { me: Person }) {
           <div>
             <p className="mb-2 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-ink-400"><Sparkles size={13} /> Pratinjau ringkas</p>
             <Card className="p-5">
-              <p className="font-bold text-ink-900">{d.name}</p>
-              <p className="text-sm text-ink-500">{d.academicRank ? `${d.academicRank} · ` : ""}{d.researchGroup}</p>
+              <div className="flex items-center gap-3">
+                <Avatar name={d.name} size={52} src={d.photo ?? ""} />
+                <div className="min-w-0">
+                  <p className="font-bold text-ink-900">{d.name}</p>
+                  <p className="text-sm text-ink-500">{d.academicRank ? `${d.academicRank} · ` : ""}{d.researchGroup}</p>
+                </div>
+              </div>
               <div className="mt-3 flex flex-wrap gap-1.5">{(d.expertise ?? []).slice(0, 4).map((e) => <Badge key={e} tone="violet">{e}</Badge>)}</div>
               <div className="mt-4 grid grid-cols-3 gap-2 text-center">
                 {[["Publikasi", pubs.length], ["Scopus", q], ["Hibah", grants.length]].map(([l, v]) => (

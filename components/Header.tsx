@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Check, ChevronDown, Menu, RotateCcw, X } from "lucide-react";
+import { Camera, Check, ChevronDown, Menu, RotateCcw, X } from "lucide-react";
 import { AppRole, PERSONAS } from "@/lib/data";
 import { useStore } from "@/lib/store";
 import { Logo } from "./Logo";
-import { Avatar, cn } from "./ui";
+import { Avatar, Button, Modal, cn } from "./ui";
+import { PhotoUpload } from "./PhotoUpload";
 
 const NAV: Record<AppRole, { href: string; label: string }[]> = {
   guest: [
@@ -54,8 +55,9 @@ const NAV: Record<AppRole, { href: string; label: string }[]> = {
 const ROLE_ORDER: AppRole[] = ["guest", "student", "alumni", "lecturer", "recruiter", "admin"];
 
 export function RoleSwitcher({ compact = false }: { compact?: boolean }) {
-  const { role, setRole, showToast, reset } = useStore();
+  const { role, setRole, showToast, reset, setPhoto, photoFor } = useStore();
   const [open, setOpen] = useState(false);
+  const [photoOpen, setPhotoOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const h = (e: MouseEvent) => ref.current && !ref.current.contains(e.target as Node) && setOpen(false);
@@ -107,11 +109,36 @@ export function RoleSwitcher({ compact = false }: { compact?: boolean }) {
               </li>
             ))}
           </ul>
+          {role !== "guest" && (
+            <button onClick={() => { setPhotoOpen(true); setOpen(false); }} className="flex w-full items-center gap-2 border-t border-ink-100 px-4 py-2.5 text-xs font-semibold text-sky-700 hover:bg-sky-50">
+              <Camera size={14} /> Ganti foto profil ({PERSONAS[role].name.split(",")[0]})
+            </button>
+          )}
           <button onClick={() => { reset(); setOpen(false); }} className="flex w-full items-center gap-2 border-t border-ink-100 px-4 py-2.5 text-xs font-medium text-ink-500 hover:bg-ink-50">
             <RotateCcw size={14} /> Kembalikan data demo ke awal
           </button>
         </div>
       )}
+      <Modal open={photoOpen} onClose={() => setPhotoOpen(false)} title="Foto profil akun">
+        <PhotoUpload
+          name={P.name}
+          value={photoFor(P.name)}
+          onChange={(v) => {
+            setPhoto(P.name, v || null);
+            showToast(v ? "Foto profil diperbarui" : "Foto profil dihapus");
+          }}
+        />
+        <p className="mt-4 rounded-xl bg-ink-50 p-3 text-xs text-ink-500">
+          {role === "recruiter"
+            ? "Foto Anda tampil pada permintaan kontak yang diterima kandidat, sehingga kandidat tahu siapa yang menghubungi."
+            : role === "admin"
+              ? "Foto tampil pada log audit dan keputusan moderasi."
+              : "Foto tampil di direktori, profil, dan kartu kandidat. Pada tampilan tamu di Katalog Talenta, foto tetap disembunyikan."}
+        </p>
+        <div className="mt-5 flex justify-end">
+          <Button onClick={() => setPhotoOpen(false)}>Selesai</Button>
+        </div>
+      </Modal>
     </div>
   );
 }

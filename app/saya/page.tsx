@@ -5,6 +5,7 @@ import { Bell, Download, Eye, Shield, Trash2, UserRound } from "lucide-react";
 import { COLLAB_LABEL, CollabType, Visibility, completeness } from "@/lib/data";
 import { NotifPrefs, useStore } from "@/lib/store";
 import { RoleGate } from "@/components/cards";
+import { PhotoUpload } from "@/components/PhotoUpload";
 import { Avatar, Badge, Button, Card, Modal, PageHeader, Toggle, cn } from "@/components/ui";
 
 const VIS: { v: Visibility; title: string; desc: string }[] = [
@@ -33,7 +34,7 @@ export default function Saya() {
         <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
           <div className="space-y-6">
             <Card className="p-6 text-center">
-              <div className="mx-auto w-fit"><Avatar name={me.name} size={80} /></div>
+              <div className="mx-auto w-fit"><PhotoUpload name={me.name} value={me.photo} size={96} onChange={(v) => { up({ photo: v }); showToast(v ? "Foto profil diperbarui" : "Foto profil dihapus"); }} /></div>
               <p className="mt-3 text-lg font-bold text-ink-900">{me.name}</p>
               <p className="text-sm text-ink-500">{me.headline}</p>
               <div className="mt-4 text-left">

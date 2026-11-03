@@ -38,6 +38,7 @@ interface State {
   verification: Record<string, "approved" | "rejected">;
   notif: NotifPrefs;
   invitations: { needId: string; personId: string }[];
+  photos: Record<string, string>; // foto akun non-civitas (HRD, admin), kunci = nama
 }
 
 const SEED_CANDIDATE = PEOPLE.find((p) => p.stage === "student" && p.entryYear <= 2022 && p.seekingInternship)!;
@@ -64,6 +65,7 @@ const initialState: State = {
   verification: {},
   notif: { jobs: "instant", internships: "instant", partnerships: "weekly" },
   invitations: [],
+  photos: {},
 };
 
 interface Ctx extends State {
@@ -81,6 +83,8 @@ interface Ctx extends State {
   decideVerification: (id: string, d: "approved" | "rejected") => void;
   setNotif: (n: NotifPrefs) => void;
   invite: (needId: string, personId: string) => void;
+  setPhoto: (name: string, dataUrl: string | null) => void;
+  photoFor: (name: string) => string | undefined;
   verificationQueue: (VerificationRequest & { decision?: "approved" | "rejected" })[];
   toast: string | null;
   showToast: (m: string) => void;
@@ -111,7 +115,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     try {
       window.localStorage.setItem(KEY, JSON.stringify(state));
     } catch {
-      /* abaikan */
+      /* penyimpanan penuh atau tidak tersedia: data tetap ada selama sesi */
     }
   }, [state, ready]);
 
@@ -160,6 +164,19 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     decideVerification: (id, d) => setState((s) => ({ ...s, verification: { ...s.verification, [id]: d } })),
     setNotif: (n) => setState((s) => ({ ...s, notif: n })),
     invite: (needId, personId) => setState((s) => ({ ...s, invitations: [...s.invitations, { needId, personId }] })),
+    setPhoto: (name, dataUrl) => {
+      const person = PEOPLE.find((p) => p.name === name);
+      setState((s) => {
+        if (person) {
+          return { ...s, personOverrides: { ...s.personOverrides, [person.id]: { ...s.personOverrides[person.id], photo: dataUrl ?? undefined } } };
+        }
+        const photos = { ...s.photos };
+        if (dataUrl) photos[name] = dataUrl;
+        else delete photos[name];
+        return { ...s, photos };
+      });
+    },
+    photoFor: (name) => state.photos[name] ?? state.personOverrides[PEOPLE.find((p) => p.name === name)?.id ?? ""]?.photo,
     verificationQueue: VERIFICATION_QUEUE.map((v) => ({ ...v, decision: state.verification[v.id] })),
     reset: () => {
       setState({ ...initialState, role: state.role });

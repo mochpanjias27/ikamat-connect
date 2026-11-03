@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { initials } from "@/lib/data";
+import { useStore } from "@/lib/store";
 
 export function cn(...c: (string | false | null | undefined)[]) {
   return c.filter(Boolean).join(" ");
@@ -64,7 +66,13 @@ export function Badge({ tone = "gray", children, className }: { tone?: keyof typ
 
 const avatarColors = ["bg-sky-500", "bg-sky-700", "bg-sky-400", "bg-sky-800", "bg-sun-500", "bg-sky-600"];
 
-export function Avatar({ name, size = 44, masked = false }: { name: string; size?: number; masked?: boolean }) {
+export function Avatar({ name, size = 44, masked = false, src }: { name: string; size?: number; masked?: boolean; src?: string | null }) {
+  const { photoFor } = useStore();
+  const photo = src === null ? undefined : src ?? photoFor(name);
+  if (photo && !masked) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={photo} alt="" aria-hidden className="shrink-0 rounded-full object-cover" style={{ width: size, height: size }} />;
+  }
   const hash = Array.from(name).reduce((s, c) => s + c.charCodeAt(0), 0);
   const color = masked ? "bg-ink-300" : avatarColors[hash % avatarColors.length];
   const text = color.includes("sun") ? "text-ink-900" : "text-white";
@@ -99,8 +107,10 @@ export function Modal({ open, onClose, title, children, wide }: { open: boolean;
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
   }, [open, onClose]);
-  if (!open) return null;
-  return (
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!open || !mounted) return null;
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink-900/40 p-0 backdrop-blur-sm sm:items-center sm:p-4" onClick={onClose}>
       <div
         className={cn("max-h-[92vh] w-full overflow-y-auto rounded-t-2xl bg-white shadow-2xl sm:rounded-2xl", wide ? "sm:max-w-3xl" : "sm:max-w-lg")}
@@ -117,7 +127,8 @@ export function Modal({ open, onClose, title, children, wide }: { open: boolean;
         </div>
         <div className="p-5">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

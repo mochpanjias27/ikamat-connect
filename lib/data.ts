@@ -93,6 +93,7 @@ export interface Person {
   workModes?: ("Onsite" | "Hybrid" | "Remote")[];
   availableFrom?: string; // YYYY-MM
   researchTopics?: string[];
+  photo?: string; // data URL hasil kompres di peramban (simulasi object storage)
   // khusus dosen
   nidn?: string;
   academicRank?: "Asisten Ahli" | "Lektor" | "Lektor Kepala" | "Guru Besar";
@@ -876,7 +877,8 @@ export function completeness(p: Person) {
       [(p.expertise?.length ?? 0) >= 2, "Minimal dua bidang kepakaran", 15],
       [!!p.researchGroup, "Kelompok riset", 5],
       [!!p.sintaId || !!p.scopusId || !!p.scholarUrl, "ID Sinta, Scopus, atau Google Scholar", 15],
-      [(p.publications?.length ?? 0) > 0, "Publikasi pilihan", 15],
+      [!!p.photo, "Foto profil", 5],
+      [(p.publications?.length ?? 0) > 0, "Publikasi pilihan", 10],
       [(p.grants?.length ?? 0) > 0, "Riwayat hibah", 10],
       [(p.courses?.length ?? 0) > 0, "Mata kuliah yang diampu", 10],
       [(p.partnerSectorsSought?.length ?? 0) > 0, "Sektor mitra yang dicari", 10],
@@ -891,7 +893,8 @@ export function completeness(p: Person) {
     [!!p.linkedin, "Tautan LinkedIn", 5],
     [!!p.thesis || p.stage === "student", "Judul tugas akhir", 5],
     [p.experience.length > 0, "Minimal satu pengalaman", 15],
-    [p.skills.length >= 3, "Minimal tiga keahlian", 15],
+    [!!p.photo, "Foto profil", 5],
+    [p.skills.length >= 3, "Minimal tiga keahlian", 10],
     [p.certs.length > 0, "Sertifikasi", 10],
     [(p.portfolio?.length ?? 0) > 0 || !!p.github, "Portofolio atau GitHub", 10],
     [!!p.cvFile, "Unggah CV", 10],

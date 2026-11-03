@@ -40,6 +40,7 @@ import { useStore } from "@/lib/store";
 import { PersonCard, RoleGate } from "@/components/cards";
 import { Badge, Button, Card, Modal, Toggle, cn, inputCls } from "@/components/ui";
 import { LecturerWizard } from "@/components/LecturerWizard";
+import { PhotoUpload } from "@/components/PhotoUpload";
 
 const STEPS = [
   { key: "diri", title: "Data diri", icon: UserRound },
@@ -240,6 +241,7 @@ export default function LengkapiProfil() {
                     Nama dan status <b>{stageLabel(d)}</b> sudah diverifikasi dari data departemen. Hubungi moderator bila ada kesalahan.
                   </span>
                 </div>
+                <PhotoUpload name={d.name} value={d.photo} onChange={(v) => up({ photo: v })} />
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Field label="Nama lengkap">
                     <input className={cn(inputCls, "bg-ink-50 text-ink-500")} value={d.name} readOnly />
