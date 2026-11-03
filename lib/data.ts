@@ -800,6 +800,7 @@ export interface ResearchNeed {
   skills: string[];
   deadline: string;
   interested: number;
+  description?: string;
 }
 
 const lec = PEOPLE.filter((p) => p.stage === "academic");

@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 import { CalendarDays, FlaskConical, Handshake, Plus, Search, Users } from "lucide-react";
-import { COLLAB_LABEL, CollabType, Person, RESEARCH_NEEDS, ResearchNeed, SECTORS, fmtDate } from "@/lib/data";
+import { ALL_SKILLS, COLLAB_LABEL, CollabType, Person, RESEARCH_NEEDS, ResearchNeed, SECTORS, fmtDate } from "@/lib/data";
+
+function localToday() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+function daysLeft(deadline: string) {
+  return Math.round((Date.parse(deadline) - Date.parse(localToday())) / 864e5);
+}
 import { useStore } from "@/lib/store";
 import { PersonCard, RoleGate } from "@/components/cards";
 import { Avatar, Badge, Button, Card, Empty, Modal, PageHeader, Select, cn, inputCls } from "@/components/ui";
@@ -108,10 +116,11 @@ export default function Kemitraan() {
                 <Card key={n.id} className="flex flex-col p-6">
                   <div className="flex flex-wrap gap-2">
                     <Badge tone="violet">{n.scheme}</Badge>
-                    <Badge><CalendarDays size={12} /> Tenggat {fmtDate(n.deadline)}</Badge>
+                    <Badge tone={daysLeft(n.deadline) < 0 ? "gray" : daysLeft(n.deadline) <= 14 ? "red" : "gray"}><CalendarDays size={12} /> Tenggat {fmtDate(n.deadline)} · {daysLeft(n.deadline) < 0 ? "ditutup" : daysLeft(n.deadline) === 0 ? "hari ini" : `${daysLeft(n.deadline)} hari lagi`}</Badge>
                   </div>
                   <h3 className="mt-3 text-lg font-bold text-ink-900">{n.title}</h3>
                   <p className="mt-1 text-sm text-ink-600"><b>Mitra yang dicari:</b> {n.partnerRole}</p>
+                  {n.description && <p className="mt-2 text-sm text-ink-500">{n.description}</p>}
                   <div className="mt-3 flex flex-wrap gap-1">
                     {[...n.sectors, ...n.skills].map((s) => (
                       <span key={s} className="rounded-md bg-ink-100 px-2 py-0.5 text-xs text-ink-600">{s}</span>
@@ -174,25 +183,116 @@ export default function Kemitraan() {
   );
 }
 
+const SCHEMES = [
+  "Hibah Riset Kolaborasi Industri",
+  "Hibah Internal Unpad",
+  "Hibah Konsorsium Nasional",
+  "Hibah Riset Kemdiktisaintek",
+  "Pengabdian kepada Masyarakat",
+  "Program Praktisi Mengajar",
+  "Lainnya",
+];
+
 function NewNeedModal({ open, onClose, onSave }: { open: boolean; onClose: () => void; onSave: (n: ResearchNeed) => void }) {
-  const [title, setTitle] = useState("Model Optimasi Portofolio Dana Pensiun Berbasis Risiko");
-  const [scheme, setScheme] = useState("Hibah Riset Kolaborasi Industri");
-  const [role, setRole] = useState("Mitra dana pensiun untuk studi kasus dan data agregat");
-  const [sector, setSector] = useState("Dana Pensiun");
+  const empty = { title: "", scheme: "", role: "", sectors: [] as string[], skills: [] as string[], deadline: "", desc: "" };
+  const [f, setF] = useState(empty);
+  const [tried, setTried] = useState(false);
+  const today = localToday();
+  const up = (patch: Partial<typeof empty>) => setF({ ...f, ...patch });
+  const close = () => {
+    setF(empty);
+    setTried(false);
+    onClose();
+  };
+  const errors = {
+    title: !f.title.trim(),
+    scheme: !f.scheme,
+    role: !f.role.trim(),
+    sectors: f.sectors.length === 0,
+    deadline: !f.deadline || f.deadline < today,
+  };
+  const invalid = Object.values(errors).some(Boolean);
+  const err = (k: keyof typeof errors) => tried && errors[k];
+  const ring = (k: keyof typeof errors) => (err(k) ? "ring-red-300 focus:ring-red-400" : "");
+  const label = (t: string, req = true) => (
+    <span className="mb-1 block text-sm font-semibold text-ink-700">
+      {t} {req && <span className="text-accent-red">*</span>}
+    </span>
+  );
   return (
-    <Modal open={open} onClose={onClose} title="Posting kebutuhan riset / hibah">
-      <div className="space-y-3">
-        <input className={inputCls} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Judul riset" />
-        <input className={inputCls} value={scheme} onChange={(e) => setScheme(e.target.value)} placeholder="Skema hibah" />
-        <input className={inputCls} value={role} onChange={(e) => setRole(e.target.value)} placeholder="Peran mitra yang dicari" />
-        <Select value={sector} onChange={setSector} options={SECTORS.map((s) => ({ value: s, label: s }))} label="Sektor mitra" />
+    <Modal open={open} onClose={close} title="Posting kebutuhan riset / hibah" wide>
+      <div className="space-y-4">
+        <label className="block">
+          {label("Judul riset / kegiatan")}
+          <input className={cn(inputCls, ring("title"))} value={f.title} onChange={(e) => up({ title: e.target.value })} placeholder="mis. Model Optimasi Portofolio Dana Pensiun Berbasis Risiko" />
+        </label>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="block">
+            {label("Skema hibah")}
+            <select className={cn(inputCls, "h-[42px]", ring("scheme"))} value={f.scheme} onChange={(e) => up({ scheme: e.target.value })}>
+              <option value="">Pilih skema…</option>
+              {SCHEMES.map((x) => (
+                <option key={x}>{x}</option>
+              ))}
+            </select>
+          </label>
+          <label className="block">
+            {label("Tenggat tawaran")}
+            <input type="date" min={today} className={cn(inputCls, "h-[42px] py-0", ring("deadline"))} value={f.deadline} onChange={(e) => up({ deadline: e.target.value })} />
+            <span className={cn("mt-1 block text-xs", err("deadline") ? "text-red-600" : "text-ink-400")}>
+              {err("deadline") && f.deadline ? "Tenggat tidak boleh sebelum hari ini" : "Batas akhir alumni menyatakan minat. Setelah itu tawaran otomatis ditutup."}
+            </span>
+          </label>
+        </div>
+        <label className="block">
+          {label("Peran mitra yang dicari")}
+          <input className={cn(inputCls, ring("role"))} value={f.role} onChange={(e) => up({ role: e.target.value })} placeholder="mis. Mitra dana pensiun untuk studi kasus dan data agregat" />
+        </label>
+        <div>
+          {label("Sektor mitra")}
+          <div className={cn("flex flex-wrap gap-1.5 rounded-xl p-2", err("sectors") ? "ring-1 ring-red-300" : "")}>
+            {SECTORS.filter((x) => x !== "Pendidikan").map((x) => {
+              const on = f.sectors.includes(x);
+              return (
+                <button key={x} type="button" onClick={() => up({ sectors: on ? f.sectors.filter((y) => y !== x) : [...f.sectors, x] })} className={cn("rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset transition", on ? "bg-violet-600 text-white ring-violet-600" : "bg-white text-ink-600 ring-ink-200 hover:bg-violet-50")}>
+                  {on && "✓ "}
+                  {x}
+                </button>
+              );
+            })}
+          </div>
+          {err("sectors") && <span className="mt-1 block text-xs text-red-600">Pilih minimal satu sektor</span>}
+        </div>
+        <div>
+          {label("Keahlian yang relevan", false)}
+          <div className="flex flex-wrap gap-1.5">
+            {ALL_SKILLS.map((x) => {
+              const on = f.skills.includes(x);
+              return (
+                <button key={x} type="button" onClick={() => up({ skills: on ? f.skills.filter((y) => y !== x) : [...f.skills, x] })} className={cn("rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset transition", on ? "bg-sky-600 text-white ring-sky-600" : "bg-white text-ink-600 ring-ink-200 hover:bg-sky-50")}>
+                  {on && "✓ "}
+                  {x}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <label className="block">
+          {label("Deskripsi singkat", false)}
+          <textarea className={inputCls} rows={3} value={f.desc} onChange={(e) => up({ desc: e.target.value })} placeholder="Latar belakang riset, kontribusi yang diharapkan dari mitra, dan manfaat bagi mitra" />
+        </label>
       </div>
+      {tried && invalid && <p className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">Lengkapi kolom bertanda * sebelum menerbitkan.</p>}
       <div className="mt-5 flex justify-end gap-2">
-        <Button variant="ghost" onClick={onClose}>Batal</Button>
+        <Button variant="ghost" onClick={close}>Batal</Button>
         <Button
-          onClick={() =>
-            onSave({ id: `r${Date.now()}`, lecturerId: "", title, scheme, partnerRole: role, sectors: [sector], skills: ["Manajemen Risiko", "Optimasi Portofolio"], deadline: "2027-01-31", interested: 0 })
-          }
+          onClick={() => {
+            setTried(true);
+            if (invalid) return;
+            onSave({ id: `r${Date.now()}`, lecturerId: "", title: f.title.trim(), scheme: f.scheme, partnerRole: f.role.trim(), sectors: f.sectors, skills: f.skills, deadline: f.deadline, interested: 0, description: f.desc.trim() || undefined });
+            setF(empty);
+            setTried(false);
+          }}
         >
           Terbitkan
         </Button>
