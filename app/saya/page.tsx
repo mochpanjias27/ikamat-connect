@@ -44,7 +44,7 @@ export default function Saya() {
                   <div className="h-2 rounded-full bg-sun-400" style={{ width: `${completeness(me).score}%` }} />
                 </div>
                 <p className="mt-2 text-xs text-ink-400">Tambahkan portofolio, CV, dan sertifikasi untuk menaikkan peluang muncul di pencarian.</p>
-                {role !== "lecturer" && <Button href="/profil/lengkapi" variant="sun" className="mt-4 w-full">Lengkapi profil & portofolio</Button>}
+                <Button href="/profil/lengkapi" variant="sun" className="mt-4 w-full">{role === "lecturer" ? "Lengkapi profil dosen" : "Lengkapi profil & portofolio"}</Button>
               </div>
             </Card>
             <Card className="p-6">

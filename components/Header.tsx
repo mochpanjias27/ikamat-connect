@@ -28,14 +28,14 @@ const NAV: Record<AppRole, { href: string; label: string }[]> = {
     { href: "/lowongan", label: "Lowongan" },
     { href: "/lowongan/baru", label: "Posting Lowongan" },
     { href: "/kemitraan", label: "Kemitraan" },
-    { href: "/saya", label: "Profil Saya" },
+    { href: "/profil/lengkapi", label: "Profil Saya" },
   ],
   lecturer: [
     { href: "/dasbor", label: "Dashboard" },
     { href: "/kemitraan", label: "Cari Mitra" },
     { href: "/direktori", label: "Direktori" },
     { href: "/lowongan", label: "Lowongan" },
-    { href: "/saya", label: "Profil Saya" },
+    { href: "/profil/lengkapi", label: "Lengkapi Profil" },
   ],
   recruiter: [
     { href: "/dasbor", label: "Dashboard HRD" },

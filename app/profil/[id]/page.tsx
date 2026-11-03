@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { ArrowLeft, BadgeCheck, Briefcase, FileText, FolderGit2, GraduationCap, Lock, Mail, MapPin, Phone, Send } from "lucide-react";
+import { ArrowLeft, BadgeCheck, BookOpen, Briefcase, FileText, FolderGit2, GraduationCap, Lock, Mail, MapPin, Phone, Send } from "lucide-react";
 import { COLLAB_LABEL, fmtDate, stageLabel } from "@/lib/data";
 import { useStore } from "@/lib/store";
 import { stageTone } from "@/components/cards";
@@ -105,7 +105,7 @@ export default function Profil() {
               <li className="flex gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sun-100 text-sun-700"><GraduationCap size={18} /></div>
                 <div>
-                  <p className="font-semibold text-ink-800">{p.program === "S3" ? "Doktor Matematika" : "S1 Matematika"} · FMIPA Unpad</p>
+                  <p className="font-semibold text-ink-800">{p.program === "S3" ? "Doktor Matematika" : `${p.program} Matematika`} · FMIPA Unpad</p>
                   <p className="text-sm text-ink-500">
                     Angkatan {p.entryYear}
                     {p.gradDate ? ` · lulus ${fmtDate(p.gradDate)}` : p.stage === "student" ? " · sedang berjalan" : ""}
@@ -115,6 +115,37 @@ export default function Profil() {
               </li>
             </ol>
           </Card>
+
+          {p.stage === "academic" && (p.publications?.length ?? 0) > 0 && (
+            <Card className="p-6">
+              <h2 className="font-bold text-ink-900">Publikasi pilihan</h2>
+              <ul className="mt-4 space-y-4">
+                {p.publications!.filter((x) => x.title).map((x, i) => (
+                  <li key={i} className="flex gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-600"><BookOpen size={18} /></div>
+                    <div>
+                      <p className="font-semibold text-ink-800">{x.title}</p>
+                      <p className="text-sm text-ink-500">{x.venue} · {x.year}</p>
+                      <Badge tone={x.indexing.startsWith("Scopus") ? "sky" : "gray"} className="mt-1">{x.indexing}</Badge>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
+          {p.stage === "academic" && (p.grants?.length ?? 0) > 0 && (
+            <Card className="p-6">
+              <h2 className="font-bold text-ink-900">Hibah & pengabdian</h2>
+              <ul className="mt-4 space-y-3">
+                {p.grants!.filter((x) => x.title).map((g, i) => (
+                  <li key={i} className="rounded-xl bg-ink-50 p-4">
+                    <p className="font-semibold text-ink-800">{g.title}</p>
+                    <p className="text-sm text-ink-500">{g.scheme} · {g.year} · {g.role}{g.partner ? ` · mitra: ${g.partner}` : ""}</p>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
 
           {((p.portfolio?.length ?? 0) > 0 || p.github || p.cvFile) && (
             <Card className="p-6">
@@ -185,6 +216,26 @@ export default function Profil() {
               <p className="mt-2 text-sm text-ink-400">Belum ada sertifikasi.</p>
             )}
           </Card>
+          {p.stage === "academic" && (
+            <Card className="p-6">
+              <h2 className="font-bold text-ink-900">Akademik</h2>
+              <dl className="mt-3 space-y-3 text-sm">
+                {p.academicRank && <div><dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">Jabatan fungsional</dt><dd className="text-ink-700">{p.academicRank}</dd></div>}
+                {p.researchGroup && <div><dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">Kelompok riset</dt><dd className="text-ink-700">{p.researchGroup}</dd></div>}
+                {(p.sintaId || p.scopusId) && <div><dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">ID akademik</dt><dd className="text-ink-700">{[p.sintaId && `SINTA ${p.sintaId}`, p.scopusId && `Scopus ${p.scopusId}`, p.hIndex !== undefined && `h-index ${p.hIndex}`].filter(Boolean).join(" · ")}</dd></div>}
+                {(p.courses?.length ?? 0) > 0 && <div><dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">Mata kuliah</dt><dd className="text-ink-700">{p.courses!.join(", ")}</dd></div>}
+                {(p.supervisionTopics?.length ?? 0) > 0 && <div><dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">Topik bimbingan</dt><dd className="text-ink-700">{p.supervisionTopics!.join(", ")}{(p.supervisionSlots ?? 0) > 0 ? ` · kuota ${p.supervisionSlots} mahasiswa` : ""}</dd></div>}
+              </dl>
+            </Card>
+          )}
+          {p.stage === "academic" && ((p.partnerSectorsSought?.length ?? 0) > 0 || p.seekingAssistants) && (
+            <Card className="p-6">
+              <h2 className="font-bold text-ink-900">Mencari kolaborasi</h2>
+              {(p.partnerSectorsSought?.length ?? 0) > 0 && <p className="mt-3 text-sm text-ink-600"><b>Mitra sektor:</b> {p.partnerSectorsSought!.join(", ")}</p>}
+              {(p.partnerNeeds?.length ?? 0) > 0 && <div className="mt-3 flex flex-wrap gap-1.5">{p.partnerNeeds!.map((n) => <Badge key={n} tone="violet">{n}</Badge>)}</div>}
+              {p.seekingAssistants && <p className="mt-3 text-sm font-semibold text-violet-700">Sedang mencari asisten riset{(p.assistantSkills?.length ?? 0) > 0 ? `: ${p.assistantSkills!.join(", ")}` : ""}</p>}
+            </Card>
+          )}
           {((p.preferredRoles?.length ?? 0) > 0 || (p.preferredSectors?.length ?? 0) > 0 || p.availableFrom || (p.languages?.length ?? 0) > 0) && (
             <Card className="p-6">
               <h2 className="font-bold text-ink-900">Preferensi karier</h2>

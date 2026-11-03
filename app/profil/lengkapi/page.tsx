@@ -39,6 +39,7 @@ import {
 import { useStore } from "@/lib/store";
 import { PersonCard, RoleGate } from "@/components/cards";
 import { Badge, Button, Card, Modal, Toggle, cn, inputCls } from "@/components/ui";
+import { LecturerWizard } from "@/components/LecturerWizard";
 
 const STEPS = [
   { key: "diri", title: "Data diri", icon: UserRound },
@@ -154,9 +155,17 @@ export default function LengkapiProfil() {
 
   const score = useMemo(() => (d ? completeness(d) : { score: 0, missing: [] as string[] }), [d]);
 
+  if (me && me.stage === "academic") {
+    return (
+      <RoleGate allow={["lecturer"]} title="Lengkapi profil dosen">
+        <LecturerWizard me={me} />
+      </RoleGate>
+    );
+  }
+
   if (!me || !d) {
     return (
-      <RoleGate allow={["student", "alumni"]} title="Lengkapi profil untuk mahasiswa dan alumni">
+      <RoleGate allow={["student", "alumni", "lecturer"]} title="Lengkapi profil civitas">
         <div className="mx-auto max-w-7xl px-4 py-20 text-center text-ink-400">Memuat profil…</div>
       </RoleGate>
     );
@@ -178,7 +187,7 @@ export default function LengkapiProfil() {
   const setExp = (i: number, patch: Partial<Experience>) => up({ experience: d.experience.map((e, j) => (j === i ? { ...e, ...patch } : e)) });
 
   return (
-    <RoleGate allow={["student", "alumni"]} title="Lengkapi profil untuk mahasiswa dan alumni">
+    <RoleGate allow={["student", "alumni"]} title="Lengkapi profil civitas">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
@@ -188,7 +197,7 @@ export default function LengkapiProfil() {
               Profil yang lengkap membuat Anda mudah ditemukan alumni yang merekrut, dosen yang mencari {isStudent ? "asisten riset" : "mitra riset"}, dan HRD yang mencari kandidat.
             </p>
           </div>
-          <Button variant="ghost" href={`/profil/${me.id}`}>Lihat profil saya</Button>
+          <div className="flex gap-2"><Button variant="ghost" href="/saya">Privasi &amp; notifikasi</Button><Button variant="secondary" href={`/profil/${me.id}`}>Lihat profil saya</Button></div>
         </div>
 
         {/* Stepper */}

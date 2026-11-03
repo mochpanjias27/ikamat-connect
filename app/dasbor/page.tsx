@@ -78,12 +78,12 @@ function CivitasDash() {
         }
       />
 
-      {(role === "student" || role === "alumni") && completeness(me).score < 100 && (
+      {completeness(me).score < 100 && (
         <div className="mb-6 flex flex-col gap-4 rounded-2xl bg-sky-950 p-6 text-white md:flex-row md:items-center">
           <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-sun-400 text-2xl font-extrabold text-ink-900">{completeness(me).score}%</div>
           <div className="flex-1">
             <p className="text-lg font-bold">Profil Anda belum lengkap</p>
-            <p className="text-sm text-sky-100/80">Lengkapi pengalaman, portofolio, dan CV agar mudah ditemukan {role === "student" ? "alumni yang membuka magang dan dosen yang mencari asisten riset" : "alumni yang merekrut, dosen, dan HRD"}. Belum diisi: {completeness(me).missing.slice(0, 3).join(", ")}.</p>
+            <p className="text-sm text-sky-100/80">{role === "lecturer" ? "Lengkapi kepakaran, publikasi, dan kebutuhan kolaborasi agar mudah ditemukan alumni industri dan mahasiswa." : <>Lengkapi pengalaman, portofolio, dan CV agar mudah ditemukan {role === "student" ? "alumni yang membuka magang dan dosen yang mencari asisten riset" : "alumni yang merekrut, dosen, dan HRD"}.</>} Belum diisi: {completeness(me).missing.slice(0, 3).join(", ")}.</p>
           </div>
           <Button variant="sun" href="/profil/lengkapi">Lengkapi sekarang <ArrowRight size={16} /></Button>
         </div>

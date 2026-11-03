@@ -17,6 +17,22 @@ export interface Cert {
   evidence?: string;
 }
 
+export interface Publication {
+  title: string;
+  venue: string;
+  year: number;
+  indexing: "Scopus Q1" | "Scopus Q2" | "Scopus Q3" | "Scopus Q4" | "Sinta 1" | "Sinta 2" | "Sinta 3" | "Prosiding" | "Lainnya";
+  url?: string;
+}
+
+export interface Grant {
+  title: string;
+  scheme: string;
+  year: number;
+  role: "Ketua" | "Anggota";
+  partner?: string;
+}
+
 export interface PortfolioItem {
   title: string;
   url: string;
@@ -77,6 +93,24 @@ export interface Person {
   workModes?: ("Onsite" | "Hybrid" | "Remote")[];
   availableFrom?: string; // YYYY-MM
   researchTopics?: string[];
+  // khusus dosen
+  nidn?: string;
+  academicRank?: "Asisten Ahli" | "Lektor" | "Lektor Kepala" | "Guru Besar";
+  researchGroup?: string;
+  sintaId?: string;
+  scopusId?: string;
+  scholarUrl?: string;
+  orcid?: string;
+  hIndex?: number;
+  publications?: Publication[];
+  grants?: Grant[];
+  courses?: string[];
+  partnerSectorsSought?: string[];
+  partnerNeeds?: string[];
+  seekingAssistants?: boolean;
+  assistantSkills?: string[];
+  supervisionTopics?: string[];
+  supervisionSlots?: number;
 }
 
 export type TrackKey = "actuarial" | "data" | "risk" | "software" | "education" | "operations";
@@ -461,6 +495,24 @@ function buildPeople(): Person[] {
       email: `${slug(L.name.replace(/^(Prof\. )?Dr\. /, "").split(",")[0])}@unpad.contoh.id`,
       phone: maskPhone(),
       expertise: L.expertise,
+      nidn: `00${String(150380 + i * 37)}`,
+      academicRank: (["Lektor", "Lektor Kepala", "Guru Besar", "Lektor", "Lektor Kepala", "Asisten Ahli", "Lektor", "Lektor Kepala"] as const)[i],
+      researchGroup: `Kelompok Riset ${L.expertise[0]}`,
+      sintaId: String(6012300 + i * 911),
+      scopusId: String(57200000000 + i * 1234567),
+      hIndex: 4 + ((i * 3) % 9),
+      courses: L.expertise.slice(0, 2).concat(["Kalkulus"]),
+      publications: [
+        { title: `Model ${L.expertise[0]} untuk Studi Kasus Indonesia`, venue: "Jurnal Matematika Terapan (simulasi)", year: 2025, indexing: "Sinta 2" },
+        { title: `A Robust Approach to ${L.expertise[1]}`, venue: "Journal of Applied Mathematics (simulasi)", year: 2024, indexing: "Scopus Q2" },
+      ],
+      grants: [{ title: `Pengembangan ${L.expertise[0]} Berbasis Data`, scheme: "Hibah Internal Unpad", year: 2025, role: "Ketua" }],
+      partnerSectorsSought: T.sectors.slice(0, 2),
+      partnerNeeds: ["Data studi kasus", "Praktisi mengajar"],
+      seekingAssistants: i % 2 === 0,
+      assistantSkills: T.skills.slice(0, 3),
+      supervisionTopics: L.expertise.slice(0, 2),
+      supervisionSlots: 2 + (i % 3),
       verified: true,
       profileCompleteness: 90,
       updatedMonthsAgo: 1,
@@ -817,6 +869,20 @@ export const ALL_ROLES = Array.from(new Set((Object.keys(TRACKS) as TrackKey[]).
 
 /** Skor kelengkapan profil 0–100 beserta daftar yang belum diisi. */
 export function completeness(p: Person) {
+  if (p.stage === "academic") {
+    const c: [boolean, string, number][] = [
+      [!!p.bio && p.bio.length >= 80, "Ringkasan diri minimal 80 karakter", 10],
+      [(p.expertise?.length ?? 0) >= 2, "Minimal dua bidang kepakaran", 15],
+      [!!p.researchGroup, "Kelompok riset", 5],
+      [!!p.sintaId || !!p.scopusId || !!p.scholarUrl, "ID Sinta, Scopus, atau Google Scholar", 15],
+      [(p.publications?.length ?? 0) > 0, "Publikasi pilihan", 15],
+      [(p.grants?.length ?? 0) > 0, "Riwayat hibah", 10],
+      [(p.courses?.length ?? 0) > 0, "Mata kuliah yang diampu", 10],
+      [(p.partnerSectorsSought?.length ?? 0) > 0, "Sektor mitra yang dicari", 10],
+      [(p.supervisionTopics?.length ?? 0) > 0, "Topik bimbingan", 10],
+    ];
+    return { score: c.reduce((s, [ok, , w]) => s + (ok ? w : 0), 0), missing: c.filter(([ok]) => !ok).map(([, l]) => l) };
+  }
   const checks: [boolean, string, number][] = [
     [!!p.headline && p.headline.length > 10, "Judul profil (headline)", 10],
     [!!p.bio && p.bio.length >= 80, "Ringkasan diri minimal 80 karakter", 10],
