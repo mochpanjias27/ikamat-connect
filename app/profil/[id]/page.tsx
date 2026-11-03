@@ -71,6 +71,11 @@ export default function Profil() {
         </div>
       </Card>
 
+      {p.stage === "academic" && (
+        <p className="mt-4 rounded-xl bg-sun-50 px-4 py-3 text-sm text-ink-700 ring-1 ring-sun-200">
+          Nama, pendidikan terakhir, dan ID akademik mengikuti daftar resmi dosen. Kepakaran, publikasi, hibah, dan isian profil lainnya masih <b>simulasi</b>.
+        </p>
+      )}
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
         <div className="space-y-6">
           <Card className="p-6">
@@ -102,17 +107,27 @@ export default function Profil() {
                   </div>
                 </li>
               ))}
-              <li className="flex gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sun-100 text-sun-700"><GraduationCap size={18} /></div>
-                <div>
-                  <p className="font-semibold text-ink-800">{p.program === "S3" ? "Doktor Matematika" : `${p.program} Matematika`} · FMIPA Unpad</p>
-                  <p className="text-sm text-ink-500">
-                    Angkatan {p.entryYear}
-                    {p.gradDate ? ` · lulus ${fmtDate(p.gradDate)}` : p.stage === "student" ? " · sedang berjalan" : ""}
-                  </p>
-                  {p.thesis && <p className="mt-1 text-sm italic text-ink-600">&ldquo;{p.thesis}&rdquo;</p>}
-                </div>
-              </li>
+              {p.stage === "academic" ? (
+                <li className="flex gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sun-100 text-sun-700"><GraduationCap size={18} /></div>
+                  <div>
+                    <p className="font-semibold text-ink-800">Dosen · Departemen Matematika FMIPA Unpad</p>
+                    <p className="text-sm text-ink-500">Pendidikan terakhir {p.program === "S3" ? "S3 (Doktor)" : "S2 (Magister)"}{p.roles.includes("alumni") ? " · juga alumni Matematika Unpad" : ""}</p>
+                  </div>
+                </li>
+              ) : (
+                <li className="flex gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sun-100 text-sun-700"><GraduationCap size={18} /></div>
+                  <div>
+                    <p className="font-semibold text-ink-800">{p.program} Matematika · FMIPA Unpad</p>
+                    <p className="text-sm text-ink-500">
+                      Angkatan {p.entryYear}
+                      {p.gradDate ? ` · lulus ${fmtDate(p.gradDate)}` : p.stage === "student" ? " · sedang berjalan" : ""}
+                    </p>
+                    {p.thesis && <p className="mt-1 text-sm italic text-ink-600">&ldquo;{p.thesis}&rdquo;</p>}
+                  </div>
+                </li>
+              )}
             </ol>
           </Card>
 
@@ -221,8 +236,18 @@ export default function Profil() {
               <h2 className="font-bold text-ink-900">Akademik</h2>
               <dl className="mt-3 space-y-3 text-sm">
                 {p.academicRank && <div><dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">Jabatan fungsional</dt><dd className="text-ink-700">{p.academicRank}</dd></div>}
+                {p.nidn && <div><dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">NIDN</dt><dd className="text-ink-700">{p.nidn}</dd></div>}
                 {p.researchGroup && <div><dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">Kelompok riset</dt><dd className="text-ink-700">{p.researchGroup}</dd></div>}
-                {(p.sintaId || p.scopusId) && <div><dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">ID akademik</dt><dd className="text-ink-700">{[p.sintaId && `SINTA ${p.sintaId}`, p.scopusId && `Scopus ${p.scopusId}`, p.hIndex !== undefined && `h-index ${p.hIndex}`].filter(Boolean).join(" · ")}</dd></div>}
+                {(p.sintaId || p.scopusId) && (
+                  <div>
+                    <dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">ID akademik</dt>
+                    <dd className="flex flex-wrap gap-x-3 text-ink-700">
+                      {p.sintaId && <span>SINTA {p.sintaId}</span>}
+                      {p.scopusId && <a className="font-medium text-sky-600 hover:underline" href={`https://www.scopus.com/authid/detail.uri?authorId=${p.scopusId}`} target="_blank" rel="noreferrer">Scopus {p.scopusId}</a>}
+                      {p.hIndex !== undefined && <span>h-index {p.hIndex}</span>}
+                    </dd>
+                  </div>
+                )}
                 {(p.courses?.length ?? 0) > 0 && <div><dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">Mata kuliah</dt><dd className="text-ink-700">{p.courses!.join(", ")}</dd></div>}
                 {(p.supervisionTopics?.length ?? 0) > 0 && <div><dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">Topik bimbingan</dt><dd className="text-ink-700">{p.supervisionTopics!.join(", ")}{(p.supervisionSlots ?? 0) > 0 ? ` · kuota ${p.supervisionSlots} mahasiswa` : ""}</dd></div>}
               </dl>
@@ -263,7 +288,7 @@ export default function Profil() {
             <h2 className="font-bold text-ink-900">Kontak</h2>
             {showContact ? (
               <div className="mt-3 space-y-2 text-sm text-ink-600">
-                <p className="flex items-center gap-2"><Mail size={15} /> {p.email}</p>
+                <p className="flex items-center gap-2 break-all"><Mail size={15} className="shrink-0" /> {p.email}</p>
                 <p className="flex items-center gap-2"><Phone size={15} /> {p.phone}</p>
               </div>
             ) : (

@@ -258,16 +258,48 @@ const LAST = [
   "Kurniawan", "Fauzi", "Anggraini", "Hermawan", "Purnama", "Sulaeman", "Wijaya", "Nurhadi",
 ];
 
-const LECTURERS = [
-  { name: "Dr. Ratna Wulandari, M.Si.", expertise: ["Matematika Keuangan", "Aktuaria", "Manajemen Risiko"], track: "actuarial" as TrackKey },
-  { name: "Dr. Bayu Adiwinata, M.Si.", expertise: ["Statistika", "Data Sains", "Machine Learning"], track: "data" as TrackKey },
-  { name: "Prof. Dr. Hartini Sasmita, M.Si.", expertise: ["Riset Operasi", "Optimasi Robust", "Rantai Pasok"], track: "operations" as TrackKey },
-  { name: "Dr. Arman Surya Pradana, M.Si.", expertise: ["Analisis Numerik", "Pemodelan Matematika", "Persamaan Diferensial"], track: "education" as TrackKey },
-  { name: "Dr. Siti Mardiyah, M.Si.", expertise: ["Pemodelan Epidemi", "Kontrol Optimal", "Biomatematika"], track: "education" as TrackKey },
-  { name: "Dr. Yudha Prakoso, M.Si.", expertise: ["Aljabar", "Kriptografi", "Teori Koding"], track: "software" as TrackKey },
-  { name: "Dr. Melati Anindya, M.Si.", expertise: ["Ekonometrika", "Value-at-Risk", "Keuangan Kuantitatif"], track: "risk" as TrackKey },
-  { name: "Dr. Gilang Ardiansyah, M.Si.", expertise: ["Teori Graf", "Optimasi Kombinatorik", "Logistik"], track: "operations" as TrackKey },
+// Daftar dosen Departemen Matematika FMIPA Unpad (sumber: laman resmi FMIPA Unpad).
+// Nama, pendidikan terakhir, NIDN, SINTA ID, dan Scopus ID mengikuti daftar resmi.
+// Kepakaran, publikasi, hibah, dan isian profil lain adalah SIMULASI.
+type L = { name: string; edu: "S2" | "S3"; nidn?: string; sinta?: string; scopus?: string; track: TrackKey; expertise: string[]; alumni?: boolean; courses?: string[]; bio?: string };
+const LECTURERS: L[] = [
+  { name: "Prof. Dr. Asep Kuswandi Supriatna, MS.", edu: "S3", nidn: "0010016506", sinta: "64593", scopus: "8318439700", track: "education", expertise: ["Biomatematika", "Pemodelan Epidemi", "Kontrol Optimal"] },
+  { name: "Prof. Dr. Sudradjat, MS", edu: "S3", nidn: "0019055805", sinta: "6021929", scopus: "55668412000", track: "operations", expertise: ["Riset Operasi", "Optimasi", "Pemrograman Matematika"] },
+  { name: "Prof. Dr. Sukono, MM., M.Si.", edu: "S3", nidn: "0019045602", sinta: "6034164", scopus: "55953611400", track: "actuarial", expertise: ["Matematika Keuangan", "Aktuaria", "Manajemen Risiko"] },
+  { name: "Prof. Dr. Budi Nurani Ruchjana, MS.", edu: "S3", nidn: "0023126313", sinta: "5999022", scopus: "25229331100", track: "data", expertise: ["Statistika", "Proses Stokastik", "Analisis Data Spasial"] },
+  { name: "Prof. Dr. Diah Chaerani, M.Si", edu: "S3", nidn: "0005067601", sinta: "257832", scopus: "26435734800", track: "operations", expertise: ["Optimasi Robust", "Riset Operasi", "Rantai Pasok"] },
+  { name: "Prof. Dr. Endang Rusyaman, MS.", edu: "S3", nidn: "0008046102", sinta: "6022807", scopus: "25633128800", track: "education", expertise: ["Analisis", "Persamaan Diferensial", "Kalkulus Fraksional"] },
+  { name: "Prof. Dr. Nursanti Anggriani, M.Si.", edu: "S3", nidn: "0005057301", sinta: "5975094", scopus: "55669296500", track: "education", expertise: ["Biomatematika", "Pemodelan Epidemi", "Sistem Dinamik"] },
+  { name: "Dr. Ema Carnia, M.Si.", edu: "S3", nidn: "0006036701", sinta: "6003286", scopus: "57189732100", track: "software", expertise: ["Aljabar", "Aljabar Linear", "Teori Matriks"] },
+  { name: "Dr. Dianne Amor Kusuma, S.Pd., M.Pd.", edu: "S3", nidn: "0031037404", sinta: "6033988", scopus: "57190047530", track: "education", expertise: ["Pendidikan Matematika", "Etnomatematika", "Pembelajaran Matematika"] },
+  { name: "Dr. Sri Purwani, M.Sc.", edu: "S3", nidn: "0002056503", sinta: "5987379", scopus: "56442665700", track: "software", expertise: ["Teori Graf", "Kombinatorika", "Matematika Diskrit"] },
+  { name: "Dr. Riaman, S.Si., M.Si.", edu: "S3", nidn: "0005017010", sinta: "6094738", scopus: "57197762472", track: "actuarial", expertise: ["Aktuaria", "Matematika Asuransi", "Statistika"] },
+  { name: "Edi Kurniadi, S.Si., M.Si, Ph.D.", edu: "S3", nidn: "0018048103", sinta: "6096401", scopus: "57211168211", track: "software", expertise: ["Aljabar", "Teori Grup Lie", "Kriptografi"] },
+  { name: "Badrulfalah, Dra., MS", edu: "S2", nidn: "0003036513", sinta: "6089728", track: "actuarial", expertise: ["Matematika Keuangan", "Statistika"] },
+  { name: "Dr. Firdaniza, Dra., M.Si.", edu: "S3", nidn: "0018066901", sinta: "6083591", scopus: "56646481300", track: "risk", expertise: ["Statistika", "Ekonometrika", "Analisis Runtun Waktu"] },
+  { name: "Kankan Parmikanti, Dra., M.Stat.", edu: "S2", nidn: "0006046202", sinta: "6201399", scopus: "57193949056", track: "data", expertise: ["Statistika", "Analisis Data"] },
+  { name: "Betty Subartini, Dra., M.Si.", edu: "S2", nidn: "0026016101", sinta: "6089729", scopus: "57193949420", track: "risk", expertise: ["Matematika Keuangan", "Statistika Keuangan"] },
+  { name: "Dwi Susanti, Dra., M.Si.", edu: "S2", nidn: "0029096501", sinta: "6097372", scopus: "24067761300", track: "actuarial", expertise: ["Aktuaria", "Statistika"] },
+  { name: "Dr. Alit Kartiwa, M.Si", edu: "S3", nidn: "0005087304", sinta: "6102155", scopus: "57193565700", track: "operations", expertise: ["Riset Operasi", "Optimasi"] },
+  { name: "Julita Nahar, Dra., MT", edu: "S2", nidn: "0018076501", sinta: "6084853", scopus: "57195379780", track: "operations", expertise: ["Riset Operasi", "Sistem Antrean"] },
+  { name: "Nurul Gusriani, S.Si., M.Si", edu: "S2", nidn: "0018087001", sinta: "6094150", scopus: "57201549861", track: "education", expertise: ["Analisis Numerik", "Pemodelan Matematika"] },
+  { name: "Dr. Muhamad Deni Johansyah, Drs., MM", edu: "S3", nidn: "0014126001", sinta: "6010122", scopus: "57211939846", track: "risk", expertise: ["Matematika Keuangan", "Manajemen Risiko", "Analisis Investasi"] },
+  { name: "Herlina Napitupulu, M.Sc., Ph.D.", edu: "S3", nidn: "0008048804", sinta: "6666962", scopus: "57199199191", track: "operations", expertise: ["Optimasi", "Metode Numerik"] },
+  { name: "Dr. Sisilia Sylviani, S.Si., M.Si", edu: "S3", nidn: "0018128801", sinta: "6068947", scopus: "55637367200", track: "risk", expertise: ["Matematika Keuangan", "Manajemen Risiko"] },
+  { name: "Dr. Anita Triska, S.Si., M.Si", edu: "S3", nidn: "0028128302", sinta: "6097337", scopus: "57208126530", track: "education", expertise: ["Pemodelan Matematika", "Persamaan Diferensial"] },
+  {
+    name: "Dr. Moch Panji Agung Saputra, M.Mat",
+    edu: "S3",
+    track: "risk",
+    alumni: true,
+    expertise: ["Pemodelan Risiko Perbankan", "Value-at-Risk", "Catastrophe Bond", "Logika Fuzzy", "Ekonomi Sirkular"],
+    courses: ["Matematika Keuangan", "Pemodelan dan Teori Risiko", "Matematika Aktuaria", "Aspek Matematika Dana Pensiun", "Pengantar Teori Optimasi"],
+    bio: "Dosen tetap Departemen Matematika FMIPA Unpad dan alumni S1, S2, S3 Matematika Unpad. Fokus riset pada pemodelan dan optimasi risiko perbankan, Value-at-Risk, catastrophe bond, teori himpunan fuzzy, dan model matematika ekonomi sirkular. Terbuka untuk kolaborasi riset dengan mitra perbankan, asuransi, dan industri.",
+  },
+  { name: "Dr. Fatuh Inayaturohmat, S.Mat., M.Mat", edu: "S3", track: "risk", expertise: ["Matematika Keuangan", "Optimasi"] },
+  { name: "Monika Hidayanti, S.Si. MT", edu: "S2", nidn: "0011017103", sinta: "6736817", track: "operations", expertise: ["Riset Operasi", "Statistika Industri"] },
 ];
+
 
 // ---------------------------------------------------------------------
 // Pembangkit acak deterministik
@@ -465,57 +497,58 @@ function buildPeople(): Person[] {
     });
   }
 
-  // ---- Dosen
+  // ---- Dosen (nama & ID akademik dari daftar resmi; isian profil simulasi)
   LECTURERS.forEach((L, i) => {
     const T = TRACKS[L.track];
+    const isProf = L.name.startsWith("Prof.");
+    const short = L.name.replace(/^(Prof\. )?Dr\. /, "").split(",")[0];
     people.push({
-      id: `p${++idx}`,
+      id: `d${i + 1}`,
       name: L.name,
-      roles: chance(0.6) ? ["lecturer", "alumni"] : ["lecturer"],
-      program: "S3",
-      npm: `NIP-1980${String(10 + i)}`,
-      entryYear: 2000 + i,
+      roles: L.alumni ? ["lecturer", "alumni"] : ["lecturer"],
+      program: L.edu,
+      npm: L.nidn ? `NIDN ${L.nidn}` : "—",
+      entryYear: L.alumni ? 2014 : 0,
       stage: "academic",
       track: L.track,
       headline: `Dosen Departemen Matematika FMIPA Unpad · ${L.expertise[0]}`,
-      bio: `Dosen tetap dengan kepakaran ${L.expertise.join(", ")}. Terbuka untuk kolaborasi riset dan konsorsium hibah bersama mitra industri.`,
+      bio: L.bio ?? `Dosen Departemen Matematika FMIPA Unpad dengan kepakaran ${L.expertise.join(", ")}. Terbuka untuk kolaborasi riset dan konsorsium hibah bersama mitra industri.`,
       city: "Sumedang",
       province: "Jawa Barat",
       sector: "Pendidikan",
       company: "Departemen Matematika FMIPA Unpad",
       jobTitle: "Dosen",
-      skills: [...L.expertise, ...sample(T.skills, 2)].slice(0, 5),
-      certs: [{ name: "Sertifikat Pendidik Dosen", issuer: "Kemdiktisaintek", year: 2015 + i, verified: true }],
-      experience: [{ title: "Dosen", company: "Departemen Matematika FMIPA Unpad", start: 2008 + i }],
+      skills: [...L.expertise, ...T.skills.filter((s) => !L.expertise.includes(s)).slice(0, 2)].slice(0, 6),
+      certs: [],
+      experience: [],
       openToWork: false,
       openToProject: true,
       seekingInternship: false,
       collab: [],
       catalogConsent: false,
       visibility: "internal",
-      email: `${slug(L.name.replace(/^(Prof\. )?Dr\. /, "").split(",")[0])}@unpad.contoh.id`,
-      phone: maskPhone(),
+      email: `${slug(short)}@unpad.contoh.id`,
+      phone: "+62 22-****-" + String(1000 + i * 37).slice(0, 4),
       expertise: L.expertise,
-      nidn: `00${String(150380 + i * 37)}`,
-      academicRank: (["Lektor", "Lektor Kepala", "Guru Besar", "Lektor", "Lektor Kepala", "Asisten Ahli", "Lektor", "Lektor Kepala"] as const)[i],
+      nidn: L.nidn,
+      academicRank: isProf ? "Guru Besar" : undefined,
       researchGroup: `Kelompok Riset ${L.expertise[0]}`,
-      sintaId: String(6012300 + i * 911),
-      scopusId: String(57200000000 + i * 1234567),
-      hIndex: 4 + ((i * 3) % 9),
-      courses: L.expertise.slice(0, 2).concat(["Kalkulus"]),
+      sintaId: L.sinta,
+      scopusId: L.scopus,
+      courses: L.courses ?? [L.expertise[0], "Kalkulus"],
       publications: [
-        { title: `Model ${L.expertise[0]} untuk Studi Kasus Indonesia`, venue: "Jurnal Matematika Terapan (simulasi)", year: 2025, indexing: "Sinta 2" },
-        { title: `A Robust Approach to ${L.expertise[1]}`, venue: "Journal of Applied Mathematics (simulasi)", year: 2024, indexing: "Scopus Q2" },
+        { title: `Model ${L.expertise[0]} untuk Studi Kasus Indonesia`, venue: "Contoh publikasi (simulasi)", year: 2025, indexing: "Sinta 2" },
+        { title: `Pendekatan Baru dalam ${L.expertise[1] ?? L.expertise[0]}`, venue: "Contoh publikasi (simulasi)", year: 2024, indexing: "Scopus Q2" },
       ],
-      grants: [{ title: `Pengembangan ${L.expertise[0]} Berbasis Data`, scheme: "Hibah Internal Unpad", year: 2025, role: "Ketua" }],
+      grants: [{ title: `Pengembangan ${L.expertise[0]} Berbasis Data (simulasi)`, scheme: "Hibah Internal Unpad", year: 2025, role: "Ketua" }],
       partnerSectorsSought: T.sectors.slice(0, 2),
       partnerNeeds: ["Data studi kasus", "Praktisi mengajar"],
       seekingAssistants: i % 2 === 0,
       assistantSkills: T.skills.slice(0, 3),
       supervisionTopics: L.expertise.slice(0, 2),
-      supervisionSlots: 2 + (i % 3),
+      supervisionSlots: 1 + (i % 3),
       verified: true,
-      profileCompleteness: 90,
+      profileCompleteness: 80,
       updatedMonthsAgo: 1,
     });
   });
@@ -548,7 +581,7 @@ export const PERSONAS: Record<AppRole, { label: string; name: string; subtitle: 
     return { label: "Alumni", name: p.name, subtitle: p.headline, personId: p.id };
   })(),
   lecturer: (() => {
-    const p = firstOf((x) => x.stage === "academic");
+    const p = firstOf((x) => x.stage === "academic" && x.name.includes("Moch Panji"));
     return { label: "Dosen", name: p.name, subtitle: "Dosen Departemen Matematika", personId: p.id };
   })(),
   recruiter: { label: "HRD Verified", name: "Sinta Maharani", subtitle: "Talent Acquisition · PT Arunika Data Nusantara" },
@@ -805,11 +838,12 @@ export interface ResearchNeed {
 }
 
 const lec = PEOPLE.filter((p) => p.stage === "academic");
+const lecBy = (part: string) => lec.find((p) => p.name.includes(part)) ?? lec[0];
 
 export const RESEARCH_NEEDS: ResearchNeed[] = [
   {
     id: "r1",
-    lecturerId: lec[0].id,
+    lecturerId: lecBy("Sukono").id,
     title: "Model Cadangan Klaim Berbasis Machine Learning untuk Asuransi Umum",
     scheme: "Hibah Riset Kolaborasi Industri",
     partnerRole: "Mitra industri penyedia data klaim dan praktisi aktuaria",
@@ -820,7 +854,7 @@ export const RESEARCH_NEEDS: ResearchNeed[] = [
   },
   {
     id: "r2",
-    lecturerId: lec[6].id,
+    lecturerId: lecBy("Moch Panji").id,
     title: "Stress Testing Risiko Iklim pada Portofolio Kredit Perbankan",
     scheme: "Hibah Konsorsium Nasional",
     partnerRole: "Bank mitra sebagai anggota konsorsium",
@@ -831,7 +865,7 @@ export const RESEARCH_NEEDS: ResearchNeed[] = [
   },
   {
     id: "r3",
-    lecturerId: lec[2].id,
+    lecturerId: lecBy("Diah Chaerani").id,
     title: "Optimasi Robust Rantai Pasok Pangan Jawa Barat",
     scheme: "Pengabdian kepada Masyarakat",
     partnerRole: "Praktisi logistik sebagai narasumber dan penyedia studi kasus",
@@ -842,7 +876,7 @@ export const RESEARCH_NEEDS: ResearchNeed[] = [
   },
   {
     id: "r4",
-    lecturerId: lec[1].id,
+    lecturerId: lecBy("Budi Nurani").id,
     title: "Praktisi Mengajar: Data Science di Industri",
     scheme: "Program Praktisi Mengajar",
     partnerRole: "Alumni praktisi data sebagai dosen tamu 4 pertemuan",

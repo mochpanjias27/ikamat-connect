@@ -53,7 +53,7 @@ export default function Saya() {
               <ul className="mt-3 space-y-3 text-sm">
                 {[
                   ["Sinta Maharani", "HRD · PT Arunika Data Nusantara", "2 hari lalu"],
-                  ["Dr. Bayu Adiwinata, M.Si.", "Dosen · via Direktori", "5 hari lalu"],
+                  ["Dosen Matematika Unpad", "via Direktori", "5 hari lalu"],
                   ["Alumni (Perbankan)", "via Direktori", "1 minggu lalu"],
                 ].map(([n, c, t]) => (
                   <li key={n} className="flex items-center gap-2">
