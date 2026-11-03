@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, BadgeCheck, Briefcase, Building2, FlaskConical, GraduationCap, Lock, Mail, Search, ShieldCheck, Sparkles, Users } from "lucide-react";
+import { ArrowRight, Briefcase, Building2, FlaskConical, GraduationCap, Lock, Search, ShieldCheck, Sparkles, Users } from "lucide-react";
 import { AppRole, PERSONAS, aggregateStats } from "@/lib/data";
 import { useStore } from "@/lib/store";
 import { JobCard } from "@/components/cards";
-import { Avatar, Badge, Button, Card } from "@/components/ui";
+import { Button, Card } from "@/components/ui";
+import { HeroEcosystem } from "@/components/HeroEcosystem";
 
 const AUDIENCES: { role: AppRole; icon: React.ReactNode; title: string; points: string[]; go: string }[] = [
   {
@@ -49,7 +50,6 @@ export default function Home() {
     showToast(`Masuk sebagai ${PERSONAS[r].label}: ${PERSONAS[r].name}`);
     router.push(href);
   };
-  const showcase = people.find((p) => p.stage === "fresh_graduate" && p.certs.length > 0 && p.openToWork) ?? people[30];
 
   return (
     <>
@@ -77,41 +77,11 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Mock visual */}
-          <div className="relative mx-auto mb-16 w-full max-w-md lg:mb-0">
-            <div className="rounded-3xl bg-white p-5 text-ink-800 shadow-2xl">
-              <div className="flex items-center gap-3">
-                <Avatar name={showcase.name} size={52} />
-                <div>
-                  <p className="flex items-center gap-1.5 font-bold">
-                    {showcase.name} <BadgeCheck size={16} className="text-sky-500" />
-                  </p>
-                  <p className="text-sm text-ink-500">Fresh Graduate {showcase.gradDate?.slice(0, 4)} · S1 Matematika</p>
-                </div>
-              </div>
-              <div className="mt-4 flex flex-wrap gap-1.5">
-                <Badge tone="green">Open to Work</Badge>
-                {showcase.skills.slice(0, 3).map((s) => (
-                  <Badge key={s} tone="sky">{s}</Badge>
-                ))}
-              </div>
-              <div className="mt-4 rounded-xl bg-sun-50 p-3 text-sm ring-1 ring-sun-200">
-                <p className="text-xs font-bold uppercase tracking-wide text-sun-700">Sertifikasi</p>
-                <p className="mt-1 font-medium">{showcase.certs[0]?.name}</p>
-              </div>
-            </div>
-            <div className="absolute -bottom-20 -left-4 w-72 rounded-2xl bg-ink-900 p-4 text-white shadow-2xl sm:-left-12">
-              <p className="flex items-center gap-2 text-xs font-semibold text-sun-300">
-                <Mail size={14} /> Notifikasi otomatis terkirim
-              </p>
-              <p className="mt-1 text-sm">
-                &ldquo;Magang Data Analyst&rdquo; dikirim ke <b>{jobs.find((j) => j.id === "j1")?.stats.sent ?? 0} mahasiswa aktif</b> yang sesuai kriteria.
-              </p>
-            </div>
-            <div className="absolute -right-3 -top-5 rotate-3 rounded-xl bg-sun-400 px-3 py-2 text-xs font-bold text-ink-900 shadow-lg">
-              ∑ {stats.alumni + stats.students + stats.lecturers} civitas terdata
-            </div>
-          </div>
+          {/* Visual ekosistem (tanpa data pribadi) */}
+          <HeroEcosystem
+            counts={{ students: stats.students, alumni: stats.alumni, lecturers: stats.lecturers, catalog: people.filter((p) => (p.openToWork || p.seekingInternship) && p.catalogConsent && p.visibility === "recruiters" && p.verified).length }}
+            sent={jobs.find((j) => j.id === "j1")?.stats.sent ?? 0}
+          />
         </div>
       </section>
 

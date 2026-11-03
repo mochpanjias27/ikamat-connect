@@ -15,3 +15,11 @@ body { @apply bg-ink-50 text-ink-800 antialiased; }
   background-image: radial-gradient(rgba(255,255,255,.18) 1px, transparent 1px);
   background-size: 18px 18px;
 }
+
+@keyframes dash-flow { to { stroke-dashoffset: -24; } }
+.flow-line { stroke-dasharray: 6 6; animation: dash-flow 1.2s linear infinite; }
+@keyframes pulse-ring { 0% { transform: scale(.9); opacity: .55; } 100% { transform: scale(1.35); opacity: 0; } }
+.pulse-ring { animation: pulse-ring 2.4s ease-out infinite; transform-origin: center; }
+@keyframes float-y { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.float-y { animation: float-y 5s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .flow-line, .pulse-ring, .float-y { animation: none; } }
