@@ -16,14 +16,14 @@ const NAV: Record<AppRole, { href: string; label: string }[]> = {
     { href: "/talenta", label: "Katalog Talenta" },
   ],
   student: [
-    { href: "/dasbor", label: "Dasbor" },
+    { href: "/dasbor", label: "Dashboard" },
     { href: "/direktori", label: "Direktori" },
     { href: "/lowongan", label: "Lowongan & Magang" },
     { href: "/profil/lengkapi", label: "Lengkapi Profil" },
     { href: "/saya", label: "Privasi" },
   ],
   alumni: [
-    { href: "/dasbor", label: "Dasbor" },
+    { href: "/dasbor", label: "Dashboard" },
     { href: "/direktori", label: "Direktori" },
     { href: "/lowongan", label: "Lowongan" },
     { href: "/lowongan/baru", label: "Posting Lowongan" },
@@ -31,14 +31,14 @@ const NAV: Record<AppRole, { href: string; label: string }[]> = {
     { href: "/saya", label: "Profil Saya" },
   ],
   lecturer: [
-    { href: "/dasbor", label: "Dasbor" },
+    { href: "/dasbor", label: "Dashboard" },
     { href: "/kemitraan", label: "Cari Mitra" },
     { href: "/direktori", label: "Direktori" },
     { href: "/lowongan", label: "Lowongan" },
     { href: "/saya", label: "Profil Saya" },
   ],
   recruiter: [
-    { href: "/dasbor", label: "Dasbor HRD" },
+    { href: "/dasbor", label: "Dashboard HRD" },
     { href: "/talenta", label: "Katalog Talenta" },
     { href: "/lowongan", label: "Lowongan" },
     { href: "/lowongan/baru", label: "Posting Lowongan" },
@@ -126,7 +126,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-ink-200/70 bg-white/90 backdrop-blur">
       <div className="bg-sun-400 text-center text-[12px] font-semibold text-ink-900">
-        <span className="inline-block px-4 py-1">Prototipe demo untuk pitching · seluruh nama, perusahaan, dan kontak adalah data fiktif</span>
+        <span className="inline-block px-4 py-1">Prototipe demo · seluruh nama, perusahaan, dan kontak adalah data simulasi</span>
       </div>
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4 sm:px-6">
         <Link href="/" className="shrink-0">

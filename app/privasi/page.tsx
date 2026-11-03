@@ -12,7 +12,7 @@ const ITEMS = [
 export default function Privasi() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-      <PageHeader eyebrow="Privasi & perlindungan data" title="Data civitas dijaga sejak rancangan" desc="Prinsip yang diterapkan pada versi produksi. Di prototipe ini semua data fiktif dan hanya tersimpan di peramban Anda." />
+      <PageHeader eyebrow="Privasi & perlindungan data" title="Data civitas dijaga sejak rancangan" desc="Prinsip yang diterapkan pada versi produksi. Di prototipe ini semua data adalah simulasi dan hanya tersimpan di peramban Anda." />
       <div className="grid gap-4 md:grid-cols-2">
         {ITEMS.map(([t, d], i) => (
           <Card key={t} className="p-6">

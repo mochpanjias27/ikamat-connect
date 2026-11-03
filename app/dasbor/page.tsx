@@ -16,7 +16,7 @@ export default function Dasbor() {
     if (ready && role === "admin") router.replace("/admin");
   }, [ready, role, router]);
   return (
-    <RoleGate allow={["student", "alumni", "lecturer", "recruiter"]} title="Dasbor tersedia setelah masuk">
+    <RoleGate allow={["student", "alumni", "lecturer", "recruiter"]} title="Dashboard tersedia setelah masuk">
       {role === "recruiter" ? <RecruiterDash /> : <CivitasDash />}
     </RoleGate>
   );
