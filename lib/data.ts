@@ -5,7 +5,7 @@
 
 export type CivitasRole = "student" | "alumni" | "lecturer";
 export type Stage = "student" | "fresh_graduate" | "professional" | "academic";
-export type CollabType = "research_partner" | "speaker" | "guest_lecturer" | "mentor" | "internship_host";
+export type CollabType = "research_partner" | "speaker" | "guest_lecturer" | "mentor" | "internship_host" | "research_assistant";
 export type Visibility = "private" | "internal" | "recruiters";
 
 export interface Cert {
@@ -13,6 +13,14 @@ export interface Cert {
   issuer: string;
   year: number;
   verified: boolean;
+  credentialUrl?: string;
+  evidence?: string;
+}
+
+export interface PortfolioItem {
+  title: string;
+  url: string;
+  desc: string;
 }
 
 export interface Experience {
@@ -20,6 +28,8 @@ export interface Experience {
   company: string;
   start: number;
   end?: number;
+  kind?: "kerja" | "magang" | "organisasi" | "asisten" | "riset";
+  desc?: string;
 }
 
 export interface Person {
@@ -55,6 +65,18 @@ export interface Person {
   verified: boolean;
   profileCompleteness: number;
   updatedMonthsAgo: number;
+  linkedin?: string;
+  github?: string;
+  portfolio?: PortfolioItem[];
+  cvFile?: string;
+  achievements?: string[];
+  languages?: string[];
+  preferredRoles?: string[];
+  preferredSectors?: string[];
+  preferredLocations?: string[];
+  workModes?: ("Onsite" | "Hybrid" | "Remote")[];
+  availableFrom?: string; // YYYY-MM
+  researchTopics?: string[];
 }
 
 export type TrackKey = "actuarial" | "data" | "risk" | "software" | "education" | "operations";
@@ -226,6 +248,9 @@ function mulberry32(seed: number) {
 const rnd = mulberry32(20261103);
 const pick = <T,>(arr: T[]): T => arr[Math.floor(rnd() * arr.length)];
 const chance = (p: number) => rnd() < p;
+// RNG terpisah untuk atribut tambahan, agar data utama tetap sama
+const rnd2 = mulberry32(777);
+const chance2 = (p: number) => rnd2() < p;
 const sample = <T,>(arr: T[], n: number): T[] => {
   const copy = [...arr];
   const out: T[] = [];
@@ -305,7 +330,9 @@ function buildPeople(): Person[] {
       openToWork: false,
       openToProject: chance(0.3),
       seekingInternship: finalYear ? chance(0.85) : chance(0.35),
-      collab: [],
+      collab: chance2(finalYear ? 0.45 : 0.2) ? ["research_assistant"] : [],
+      researchTopics: chance2(0.5) ? [T.label] : undefined,
+      portfolio: chance2(0.5) ? [{ title: `Proyek ${T.skills[0]}`, url: "https://github.com/contoh", desc: `Proyek mata kuliah bidang ${T.label.toLowerCase()}` }] : undefined,
       catalogConsent: finalYear && chance(0.6),
       visibility: finalYear && chance(0.6) ? "recruiters" : "internal",
       email: `${slug(name)}@mail.contoh.id`,
@@ -778,7 +805,34 @@ export const COLLAB_LABEL: Record<CollabType, string> = {
   guest_lecturer: "Praktisi mengajar",
   mentor: "Mentor",
   internship_host: "Penyedia magang",
+  research_assistant: "Asisten riset",
 };
+
+export const PROVINCES = [
+  "Jawa Barat", "DKI Jakarta", "Banten", "Jawa Tengah", "DI Yogyakarta", "Jawa Timur", "Bali", "Sumatera Utara", "Sumatera Barat",
+  "Riau", "Sumatera Selatan", "Lampung", "Kalimantan Timur", "Sulawesi Selatan", "Lainnya / luar negeri",
+];
+
+export const ALL_ROLES = Array.from(new Set((Object.keys(TRACKS) as TrackKey[]).flatMap((k) => TRACKS[k].titles))).sort();
+
+/** Skor kelengkapan profil 0–100 beserta daftar yang belum diisi. */
+export function completeness(p: Person) {
+  const checks: [boolean, string, number][] = [
+    [!!p.headline && p.headline.length > 10, "Judul profil (headline)", 10],
+    [!!p.bio && p.bio.length >= 80, "Ringkasan diri minimal 80 karakter", 10],
+    [!!p.city, "Kota domisili", 5],
+    [!!p.linkedin, "Tautan LinkedIn", 5],
+    [!!p.thesis || p.stage === "student", "Judul tugas akhir", 5],
+    [p.experience.length > 0, "Minimal satu pengalaman", 15],
+    [p.skills.length >= 3, "Minimal tiga keahlian", 15],
+    [p.certs.length > 0, "Sertifikasi", 10],
+    [(p.portfolio?.length ?? 0) > 0 || !!p.github, "Portofolio atau GitHub", 10],
+    [!!p.cvFile, "Unggah CV", 10],
+    [(p.preferredRoles?.length ?? 0) > 0, "Peran yang diminati", 5],
+  ];
+  const score = checks.reduce((s, [ok, , w]) => s + (ok ? w : 0), 0);
+  return { score, missing: checks.filter(([ok]) => !ok).map(([, l]) => l) };
+}
 
 // ---------------------------------------------------------------------
 // Antrean verifikasi (admin)
@@ -814,7 +868,7 @@ export function aggregateStats(people = PEOPLE) {
     lecturers: people.filter((p) => p.stage === "academic").length,
     openToWork: people.filter((p) => p.openToWork).length,
     certs: people.reduce((s, p) => s + p.certs.length, 0),
-    partners: people.filter((p) => p.collab.length > 0).length,
+    partners: people.filter((p) => p.collab.some((c) => c !== "research_assistant")).length,
     sectors: Object.entries(sectorCount).sort((a, b) => b[1] - a[1]),
   };
 }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { ArrowLeft, BadgeCheck, Briefcase, GraduationCap, Lock, Mail, MapPin, Phone, Send } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Briefcase, FileText, FolderGit2, GraduationCap, Lock, Mail, MapPin, Phone, Send } from "lucide-react";
 import { COLLAB_LABEL, fmtDate, stageLabel } from "@/lib/data";
 import { useStore } from "@/lib/store";
 import { stageTone } from "@/components/cards";
@@ -39,7 +39,7 @@ export default function Profil() {
       <Card className="mt-4 overflow-hidden">
         <div className="hero-grid h-28" />
         <div className="px-6 pb-6">
-          <div className="-mt-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="-mt-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="flex items-end gap-4">
               <div className="rounded-full ring-4 ring-white">
                 <Avatar name={p.name} size={96} />
@@ -56,7 +56,7 @@ export default function Profil() {
                 <Send size={16} /> Hubungi via platform
               </Button>
             )}
-            {isMe && <Button href="/saya" variant="secondary">Edit profil & privasi</Button>}
+            {isMe && <Button href="/profil/lengkapi" variant="sun">Lengkapi / edit profil</Button>}
           </div>
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <Badge tone={stageTone(p)}>{stageLabel(p)}</Badge>
@@ -98,6 +98,7 @@ export default function Profil() {
                     <p className="font-semibold text-ink-800">{e.title}</p>
                     <p className="text-sm text-ink-500">{e.company}</p>
                     <p className="text-xs text-ink-400">{e.start} – {e.end ?? "sekarang"}</p>
+                    {e.desc && <p className="mt-1 text-sm text-ink-600">{e.desc}</p>}
                   </div>
                 </li>
               ))}
@@ -114,6 +115,47 @@ export default function Profil() {
               </li>
             </ol>
           </Card>
+
+          {((p.portfolio?.length ?? 0) > 0 || p.github || p.cvFile) && (
+            <Card className="p-6">
+              <h2 className="font-bold text-ink-900">Portofolio</h2>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {(p.portfolio ?? []).filter((x) => x.title).map((x, i) => (
+                  <div key={i} className="rounded-xl bg-ink-50 p-4">
+                    <p className="flex items-center gap-2 font-semibold text-ink-800"><FolderGit2 size={16} className="text-sky-600" /> {x.title}</p>
+                    {x.desc && <p className="mt-1 text-sm text-ink-500">{x.desc}</p>}
+                    {x.url && <p className="mt-1 truncate text-xs font-medium text-sky-600">{x.url}</p>}
+                  </div>
+                ))}
+                {p.github && (
+                  <div className="rounded-xl bg-ink-50 p-4">
+                    <p className="font-semibold text-ink-800">GitHub</p>
+                    <p className="mt-1 truncate text-xs font-medium text-sky-600">{p.github}</p>
+                  </div>
+                )}
+                {p.cvFile && (
+                  <div className="flex items-center gap-3 rounded-xl bg-sky-50 p-4">
+                    <FileText size={20} className="text-sky-600" />
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-ink-800">CV tersedia</p>
+                      <p className="text-xs text-ink-500">{showContact ? p.cvFile : "Dibuka setelah permintaan kontak diterima"}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </Card>
+          )}
+
+          {(p.achievements ?? []).filter(Boolean).length > 0 && (
+            <Card className="p-6">
+              <h2 className="font-bold text-ink-900">Prestasi</h2>
+              <ul className="mt-3 space-y-2 text-ink-600">
+                {p.achievements!.filter(Boolean).map((a) => (
+                  <li key={a} className="flex gap-2"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-sun-500" /> {a}</li>
+                ))}
+              </ul>
+            </Card>
+          )}
         </div>
 
         <div className="space-y-6">
@@ -143,6 +185,18 @@ export default function Profil() {
               <p className="mt-2 text-sm text-ink-400">Belum ada sertifikasi.</p>
             )}
           </Card>
+          {((p.preferredRoles?.length ?? 0) > 0 || (p.preferredSectors?.length ?? 0) > 0 || p.availableFrom || (p.languages?.length ?? 0) > 0) && (
+            <Card className="p-6">
+              <h2 className="font-bold text-ink-900">Preferensi karier</h2>
+              <dl className="mt-3 space-y-3 text-sm">
+                {(p.preferredRoles?.length ?? 0) > 0 && <div><dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">Peran</dt><dd className="text-ink-700">{p.preferredRoles!.join(", ")}</dd></div>}
+                {(p.preferredSectors?.length ?? 0) > 0 && <div><dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">Sektor</dt><dd className="text-ink-700">{p.preferredSectors!.join(", ")}</dd></div>}
+                {((p.workModes?.length ?? 0) > 0 || (p.preferredLocations?.length ?? 0) > 0) && <div><dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">Lokasi & mode</dt><dd className="text-ink-700">{[...(p.preferredLocations ?? []), ...(p.workModes ?? [])].join(", ")}</dd></div>}
+                {p.availableFrom && <div><dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">Siap mulai</dt><dd className="text-ink-700">{fmtDate(p.availableFrom)}</dd></div>}
+                {(p.languages?.length ?? 0) > 0 && <div><dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">Bahasa</dt><dd className="text-ink-700">{p.languages!.join(", ")}</dd></div>}
+              </dl>
+            </Card>
+          )}
           {p.collab.length > 0 && (
             <Card className="p-6">
               <h2 className="font-bold text-ink-900">Bersedia menjadi</h2>
@@ -151,6 +205,7 @@ export default function Profil() {
                   <Badge key={c} tone="violet">{COLLAB_LABEL[c]}</Badge>
                 ))}
               </div>
+              {(p.researchTopics?.length ?? 0) > 0 && <p className="mt-3 text-sm text-ink-600"><b>Topik riset:</b> {p.researchTopics!.join(", ")}</p>}
             </Card>
           )}
           <Card className="p-6">

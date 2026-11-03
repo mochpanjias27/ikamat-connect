@@ -25,7 +25,7 @@ export default function Kemitraan() {
   const tab = tabSel ?? (isLecturer ? "find" : "needs");
 
   const alumni = people.filter((p) => p.roles.includes("alumni") && p.stage === "professional");
-  let list = alumni.filter((p) => p.collab.length > 0);
+  let list = people.filter((p) => p.stage !== "academic" && p.collab.length > 0 && (type === "research_assistant" ? true : p.stage === "professional"));
   if (type !== "all") list = list.filter((p) => p.collab.includes(type));
   if (sector !== "all") list = list.filter((p) => p.sector === sector);
   if (q.trim()) {

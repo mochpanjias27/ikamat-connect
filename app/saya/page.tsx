@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Bell, Download, Eye, Shield, Trash2, UserRound } from "lucide-react";
-import { COLLAB_LABEL, CollabType, Visibility } from "@/lib/data";
+import { COLLAB_LABEL, CollabType, Visibility, completeness } from "@/lib/data";
 import { NotifPrefs, useStore } from "@/lib/store";
 import { RoleGate } from "@/components/cards";
 import { Avatar, Badge, Button, Card, Modal, PageHeader, Toggle, cn } from "@/components/ui";
@@ -38,12 +38,13 @@ export default function Saya() {
               <p className="text-sm text-ink-500">{me.headline}</p>
               <div className="mt-4 text-left">
                 <div className="flex justify-between text-xs font-semibold text-ink-500">
-                  <span>Kelengkapan profil</span><span>{me.profileCompleteness}%</span>
+                  <span>Kelengkapan profil</span><span>{completeness(me).score}%</span>
                 </div>
                 <div className="mt-1 h-2 rounded-full bg-ink-100">
-                  <div className="h-2 rounded-full bg-sun-400" style={{ width: `${me.profileCompleteness}%` }} />
+                  <div className="h-2 rounded-full bg-sun-400" style={{ width: `${completeness(me).score}%` }} />
                 </div>
-                <p className="mt-2 text-xs text-ink-400">Tambahkan portofolio dan sertifikasi untuk menaikkan peluang muncul di pencarian.</p>
+                <p className="mt-2 text-xs text-ink-400">Tambahkan portofolio, CV, dan sertifikasi untuk menaikkan peluang muncul di pencarian.</p>
+                {role !== "lecturer" && <Button href="/profil/lengkapi" variant="sun" className="mt-4 w-full">Lengkapi profil & portofolio</Button>}
               </div>
             </Card>
             <Card className="p-6">

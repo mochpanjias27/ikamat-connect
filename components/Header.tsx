@@ -19,7 +19,8 @@ const NAV: Record<AppRole, { href: string; label: string }[]> = {
     { href: "/dasbor", label: "Dasbor" },
     { href: "/direktori", label: "Direktori" },
     { href: "/lowongan", label: "Lowongan & Magang" },
-    { href: "/saya", label: "Profil Saya" },
+    { href: "/profil/lengkapi", label: "Lengkapi Profil" },
+    { href: "/saya", label: "Privasi" },
   ],
   alumni: [
     { href: "/dasbor", label: "Dasbor" },

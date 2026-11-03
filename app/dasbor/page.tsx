@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { ArrowRight, Briefcase, Check, Clock, Handshake, Inbox, Mail, Plus, Send, Users, X } from "lucide-react";
-import { PERSONAS, RESEARCH_NEEDS, resolveAudience } from "@/lib/data";
+import { COLLAB_LABEL, PERSONAS, RESEARCH_NEEDS, completeness, resolveAudience } from "@/lib/data";
 import { useStore } from "@/lib/store";
 import { JobCard, PersonCard, RoleGate } from "@/components/cards";
 import { Avatar, Badge, Button, Card, Empty, PageHeader, Stat } from "@/components/ui";
@@ -78,6 +78,16 @@ function CivitasDash() {
         }
       />
 
+      {(role === "student" || role === "alumni") && completeness(me).score < 100 && (
+        <div className="mb-6 flex flex-col gap-4 rounded-2xl bg-sky-950 p-6 text-white md:flex-row md:items-center">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-sun-400 text-2xl font-extrabold text-ink-900">{completeness(me).score}%</div>
+          <div className="flex-1">
+            <p className="text-lg font-bold">Profil Anda belum lengkap</p>
+            <p className="text-sm text-sky-100/80">Lengkapi pengalaman, portofolio, dan CV agar mudah ditemukan {role === "student" ? "alumni yang membuka magang dan dosen yang mencari asisten riset" : "alumni yang merekrut, dosen, dan HRD"}. Belum diisi: {completeness(me).missing.slice(0, 3).join(", ")}.</p>
+          </div>
+          <Button variant="sun" href="/profil/lengkapi">Lengkapi sekarang <ArrowRight size={16} /></Button>
+        </div>
+      )}
       {role === "alumni" && (
         <div className="mb-6 grid gap-4 sm:grid-cols-3">
           <Stat label="Lowongan saya" value={myJobs.length} icon={<Briefcase size={18} />} />
@@ -149,6 +159,24 @@ function CivitasDash() {
                   </Link>
                 ))}
               </div>
+            </Card>
+          )}
+          {role === "lecturer" && (
+            <Card className="p-6">
+              <p className="font-bold text-ink-900">Mahasiswa calon asisten riset</p>
+              <p className="text-sm text-ink-500">Bersedia dilibatkan dalam riset dosen.</p>
+              <div className="mt-4 space-y-3">
+                {people.filter((p) => p.stage === "student" && p.collab.includes("research_assistant")).slice(0, 4).map((p) => (
+                  <Link key={p.id} href={`/profil/${p.id}`} className="flex items-center gap-3 rounded-xl p-2 hover:bg-ink-50">
+                    <Avatar name={p.name} size={40} />
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-ink-800">{p.name}</p>
+                      <p className="truncate text-xs text-ink-500">Angkatan {p.entryYear} · {p.skills.slice(0, 2).join(", ")}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              <Link href="/kemitraan" className="mt-3 block text-sm font-semibold text-sky-600">Cari {COLLAB_LABEL.research_assistant.toLowerCase()} lainnya →</Link>
             </Card>
           )}
           {role === "lecturer" && (
