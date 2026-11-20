@@ -52,6 +52,7 @@ export function authErrorText(msg: string): string {
   if (m.includes("already registered") || m.includes("already been registered")) return "Email ini sudah terdaftar. Silakan masuk atau atur ulang kata sandi.";
   if (m.includes("rate limit") || m.includes("too many")) return "Terlalu banyak percobaan. Tunggu beberapa menit lalu coba lagi.";
   if (m.includes("password should be")) return "Kata sandi terlalu lemah. Gunakan minimal 8 karakter dengan huruf dan angka.";
+  if (m.includes("database error saving new user") || m.includes("unpad.ac.id")) return "Pendaftaran ditolak. Untuk status dosen, gunakan email @unpad.ac.id.";
   if (m.includes("failed to fetch") || m.includes("network")) return "Tidak dapat terhubung ke server. Periksa koneksi internet Anda.";
   return msg;
 }

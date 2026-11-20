@@ -82,6 +82,11 @@ declare
 begin
   if st not in ('mahasiswa', 'alumni', 'dosen') then st := 'mahasiswa'; end if;
 
+  -- Dosen wajib memakai email resmi Unpad.
+  if st = 'dosen' and lower(new.email) !~ '@unpad\.ac\.id$' then
+    raise exception 'Pendaftaran dosen wajib memakai email @unpad.ac.id';
+  end if;
+
   insert into public.profiles (id, email, full_name, status, npm, nidn, angkatan, tahun_lulus)
   values (
     new.id,
@@ -120,6 +125,10 @@ begin
 
   -- auth.uid() null = dijalankan dari SQL Editor / service role: diizinkan.
   if auth.uid() is not null and not public.is_admin() then
+    if new.status = 'dosen' and old.status <> 'dosen' and lower(new.email) !~ '@unpad\.ac\.id$' then
+      raise exception 'Status dosen memerlukan email @unpad.ac.id';
+    end if;
+
     if new.is_admin            is distinct from old.is_admin
     or new.verification_status is distinct from old.verification_status
     or new.verification_note   is distinct from old.verification_note
@@ -133,7 +142,6 @@ begin
     -- Mengubah data identitas mengembalikan status ke "pending" agar dicek ulang.
     if old.verification_status = 'verified' and (
          new.npm is distinct from old.npm
-      or new.nidn is distinct from old.nidn
       or new.status is distinct from old.status
       or new.angkatan is distinct from old.angkatan
       or new.tahun_lulus is distinct from old.tahun_lulus

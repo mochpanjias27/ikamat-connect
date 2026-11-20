@@ -82,7 +82,7 @@ export default function Verifikasi() {
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <p className="mb-1 text-sm font-semibold uppercase tracking-wide text-sky-600">Admin IKAMAT</p>
       <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 md:text-3xl">Verifikasi akun</h1>
-      <p className="mt-2 max-w-2xl text-ink-500">Mahasiswa: cocokkan nama dan NPM. Alumni: cocokkan nama, tahun masuk, dan tahun lulus dengan daftar alumni IKAMAT atau PDDikti. Dosen: cocokkan nama dengan NIDN (10 digit) atau NUPTK (16 digit) di PDDikti.</p>
+      <p className="mt-2 max-w-2xl text-ink-500">Mahasiswa: cocokkan nama dan NPM. Alumni: cocokkan nama, tahun masuk, dan tahun lulus dengan daftar alumni IKAMAT atau PDDikti. Dosen: cocokkan nama dan email @unpad.ac.id dengan daftar dosen departemen.</p>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex gap-1 overflow-x-auto rounded-xl bg-ink-100 p-1">

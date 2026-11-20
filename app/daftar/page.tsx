@@ -26,7 +26,7 @@ export default function Daftar() {
     if (form.password.length < 8 || !/[A-Za-z]/.test(form.password) || !/\d/.test(form.password)) return "Kata sandi minimal 8 karakter dan memuat huruf serta angka.";
     if (form.password !== form.password2) return "Konfirmasi kata sandi tidak sama.";
     if (status === "mahasiswa" && !/^\d{10,15}$/.test(form.npm.trim())) return "NPM harus berupa 10–15 digit angka.";
-    if (status === "dosen" && !/^(\d{10}|\d{16})$/.test(form.nidn.trim())) return "Isi NIDN (10 digit) atau NUPTK (16 digit), angka saja.";
+    if (status === "dosen" && !/@unpad\.ac\.id$/i.test(form.email.trim())) return "Dosen wajib mendaftar dengan email @unpad.ac.id.";
     if (status !== "dosen") {
       const a = Number(form.angkatan);
       if (!a || a < 1957 || a > THIS_YEAR) return "Isi tahun masuk (angkatan) dengan benar.";
@@ -55,7 +55,7 @@ export default function Daftar() {
           full_name: form.full_name.trim(),
           status,
           npm: status === "mahasiswa" ? form.npm.trim() : "",
-          nidn: status === "dosen" ? form.nidn.trim() : "",
+          nidn: "",
           angkatan: status === "dosen" ? "" : form.angkatan,
           tahun_lulus: status === "alumni" ? form.tahun_lulus : "",
           consents,
@@ -117,34 +117,30 @@ export default function Daftar() {
           <input className={inputCls} value={form.full_name} onChange={set("full_name")} autoComplete="name" />
         </Field>
 
+        {status !== "dosen" && (
         <div className="grid gap-4 sm:grid-cols-2">
           {status === "mahasiswa" ? (
             <Field label="NPM" required hint="Dipakai untuk verifikasi, tidak ditampilkan publik.">
               <input className={inputCls} value={form.npm} onChange={set("npm")} inputMode="numeric" placeholder="1408xxxxxxxx" />
             </Field>
-          ) : status === "dosen" ? (
-            <Field label="NIDN / NUPTK" required hint="NIDN 10 digit atau NUPTK 16 digit, untuk verifikasi.">
-              <input className={inputCls} value={form.nidn} onChange={set("nidn")} inputMode="numeric" maxLength={16} />
-            </Field>
           ) : null}
-          {status !== "dosen" && (
-            <Field label="Tahun masuk (angkatan)" required>
-              <input className={inputCls} value={form.angkatan} onChange={set("angkatan")} inputMode="numeric" placeholder="2020" maxLength={4} />
-            </Field>
-          )}
+          <Field label="Tahun masuk (angkatan)" required>
+            <input className={inputCls} value={form.angkatan} onChange={set("angkatan")} inputMode="numeric" placeholder="2020" maxLength={4} />
+          </Field>
           {status === "alumni" && (
             <Field label="Tahun lulus" required>
               <input className={inputCls} value={form.tahun_lulus} onChange={set("tahun_lulus")} inputMode="numeric" placeholder="2024" maxLength={4} />
             </Field>
           )}
         </div>
+        )}
 
         {status === "alumni" && (
           <p className="-mt-2 text-xs text-ink-500">Alumni tidak perlu NPM. Verifikasi dilakukan admin IKAMAT dengan mencocokkan nama, tahun masuk, dan tahun lulus.</p>
         )}
 
-        <Field label="Email" required hint={status === "mahasiswa" ? "Disarankan email @mail.unpad.ac.id agar verifikasi lebih cepat." : status === "dosen" ? "Disarankan email @unpad.ac.id." : "Email pribadi yang aktif."}>
-          <input className={inputCls} type="email" value={form.email} onChange={set("email")} autoComplete="email" />
+        <Field label={status === "dosen" ? "Email Unpad" : "Email"} required hint={status === "mahasiswa" ? "Disarankan email @mail.unpad.ac.id agar verifikasi lebih cepat." : status === "dosen" ? "Wajib email @unpad.ac.id. Verifikasi dosen dilakukan dari nama dan email ini." : "Email pribadi yang aktif."}>
+          <input className={inputCls} type="email" value={form.email} onChange={set("email")} autoComplete="email" placeholder={status === "dosen" ? "nama@unpad.ac.id" : undefined} />
         </Field>
 
         <div className="grid gap-4 sm:grid-cols-2">
