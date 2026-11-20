@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Camera, Check, ChevronDown, Menu, RotateCcw, X } from "lucide-react";
 import { AppRole, PERSONAS } from "@/lib/data";
 import { useStore } from "@/lib/store";
+import { supabaseBrowser } from "@/lib/supabase/client";
 import { Logo } from "./Logo";
 import { Avatar, Button, Modal, cn } from "./ui";
 import { PhotoUpload } from "./PhotoUpload";
@@ -148,12 +149,19 @@ export function Header() {
   const path = usePathname();
   const [mobile, setMobile] = useState(false);
   useEffect(() => setMobile(false), [path, role]);
+  const [authed, setAuthed] = useState(false);
+  useEffect(() => {
+    const sb = supabaseBrowser();
+    sb.auth.getSession().then(({ data }) => setAuthed(!!data.session));
+    const { data: sub } = sb.auth.onAuthStateChange((_e, session) => setAuthed(!!session));
+    return () => sub.subscription.unsubscribe();
+  }, []);
   const items = NAV[role];
   const active = (href: string) => (href === "/" ? path === "/" : path === href || (href !== "/lowongan" && path.startsWith(href + "/")) || (href === "/lowongan" && path.startsWith("/lowongan") && !path.startsWith("/lowongan/baru")));
   return (
     <header className="sticky top-0 z-40 border-b border-ink-200/70 bg-white/90 backdrop-blur">
       <div className="bg-sun-400 text-center text-[12px] font-semibold text-ink-900">
-        <span className="inline-block px-4 py-1">Prototipe demo · seluruh nama, perusahaan, dan kontak adalah data simulasi</span>
+        <span className="inline-block px-4 py-1">Pendaftaran akun sudah dibuka · direktori, lowongan, dan katalog masih berisi data simulasi</span>
       </div>
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4 sm:px-6">
         <Link href="/" className="shrink-0">
@@ -174,10 +182,21 @@ export function Header() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-2">
-          {role === "guest" && (
-            <Link href="/masuk" className="hidden rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700 sm:inline-flex">
-              Masuk / Daftar
+          {authed ? (
+            <Link href="/akun" className="hidden rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700 sm:inline-flex">
+              Akun saya
             </Link>
+          ) : (
+            role === "guest" && (
+              <>
+                <Link href="/akun/masuk" className="hidden rounded-xl px-3 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-50 sm:inline-flex">
+                  Masuk
+                </Link>
+                <Link href="/daftar" className="hidden rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700 sm:inline-flex">
+                  Daftar
+                </Link>
+              </>
+            )
           )}
           <RoleSwitcher />
           <button className="rounded-lg p-2 text-ink-600 hover:bg-ink-100 md:hidden" onClick={() => setMobile((m) => !m)} aria-label="Menu">
@@ -192,10 +211,19 @@ export function Header() {
               {i.label}
             </Link>
           ))}
-          {role === "guest" && (
-            <Link href="/masuk" className="mt-1 block rounded-lg bg-sky-600 px-3 py-2.5 text-center text-sm font-semibold text-white">
-              Masuk / Daftar
+          {authed ? (
+            <Link href="/akun" className="mt-1 block rounded-lg bg-sky-600 px-3 py-2.5 text-center text-sm font-semibold text-white">
+              Akun saya
             </Link>
+          ) : (
+            <div className="mt-1 grid grid-cols-2 gap-2">
+              <Link href="/akun/masuk" className="block rounded-lg px-3 py-2.5 text-center text-sm font-semibold text-sky-700 ring-1 ring-inset ring-sky-200">
+                Masuk
+              </Link>
+              <Link href="/daftar" className="block rounded-lg bg-sky-600 px-3 py-2.5 text-center text-sm font-semibold text-white">
+                Daftar
+              </Link>
+            </div>
           )}
         </nav>
       )}
@@ -219,17 +247,17 @@ export function Footer() {
             <li><Link href="/lowongan" className="hover:text-white">Lowongan & Magang</Link></li>
             <li><Link href="/talenta" className="hover:text-white">Katalog Talenta untuk HRD</Link></li>
             <li><Link href="/kemitraan" className="hover:text-white">Kemitraan Riset</Link></li>
-            <li><Link href="/privasi" className="hover:text-white">Privasi & Perlindungan Data</Link></li>
+            <li><Link href="/kebijakan-privasi" className="hover:text-white">Kebijakan Privasi</Link></li>
           </ul>
         </div>
         <div className="text-sm">
-          <p className="mb-3 font-bold text-white">Tentang prototipe ini</p>
+          <p className="mb-3 font-bold text-white">Status platform</p>
           <p className="text-sky-200/80">
-            Versi simulasi tanpa backend. Login, email, dan verifikasi disimulasikan di peramban. Data tersimpan sementara di perangkat Anda.
+            Pendaftaran dan verifikasi akun sudah berjalan dengan data sungguhan. Direktori, lowongan, dan katalog yang tampil masih data simulasi untuk demonstrasi.
           </p>
         </div>
       </div>
-      <div className="border-t border-white/10 py-4 text-center text-xs text-sky-300/70">© 2026 IKAMAT Connect · Prototipe untuk keperluan presentasi</div>
+      <div className="border-t border-white/10 py-4 text-center text-xs text-sky-300/70">© 2026 IKAMAT Connect · Matematika FMIPA Universitas Padjadjaran</div>
     </footer>
   );
 }

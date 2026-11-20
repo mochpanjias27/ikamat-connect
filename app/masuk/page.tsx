@@ -37,7 +37,20 @@ export default function Masuk() {
   };
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-      <PageHeader eyebrow="Simulasi masuk" title="Pilih peran untuk mencoba platform" desc="Pada versi produksi, setiap orang masuk dengan akunnya sendiri. Di prototipe ini Anda dapat berpindah peran kapan saja lewat menu di kanan atas." />
+      <div className="mb-10 flex flex-col gap-4 rounded-2xl bg-sky-950 p-6 text-white shadow-card sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wide text-sun-400">Akun sungguhan</p>
+          <p className="mt-1 text-xl font-extrabold">Mahasiswa, alumni, atau dosen Matematika Unpad?</p>
+          <p className="mt-1 text-sm text-sky-200">Buat akun dengan email Anda sendiri. Data tersimpan di server dan diverifikasi admin IKAMAT.</p>
+        </div>
+        <div className="flex shrink-0 gap-2">
+          <Button href="/akun/masuk" variant="secondary">Masuk</Button>
+          <Button href="/daftar" variant="sun">Daftar akun</Button>
+        </div>
+      </div>
+      <div id="demo" className="scroll-mt-28">
+        <PageHeader eyebrow="Mode demo" title="Atau coba platform dengan peran simulasi" desc="Tanpa akun. Seluruh nama, perusahaan, dan kontak di mode ini adalah data simulasi. Anda dapat berpindah peran kapan saja lewat menu di kanan atas." />
+      </div>
       <div className="grid gap-8 lg:grid-cols-[1.3fr_.7fr]">
         <div className="grid gap-4 sm:grid-cols-2">
           {(["student", "alumni", "lecturer", "recruiter", "admin"] as AppRole[]).map((r) => (
