@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { MailCheck } from "lucide-react";
 import { Button, inputCls } from "@/components/ui";
@@ -11,6 +12,7 @@ type Status = "mahasiswa" | "alumni" | "dosen";
 const THIS_YEAR = new Date().getFullYear();
 
 export default function Daftar() {
+  const router = useRouter();
   const [status, setStatus] = useState<Status>("mahasiswa");
   const [form, setForm] = useState({ full_name: "", email: "", password: "", password2: "", npm: "", nidn: "", angkatan: "", tahun_lulus: "" });
   const [consents, setConsents] = useState<Record<ConsentPurpose, boolean>>({ terms: false, directory: true, job_email: true, hrd_catalog: false });
@@ -46,7 +48,7 @@ export default function Daftar() {
     if (v) return;
     setBusy(true);
     const email = form.email.trim().toLowerCase();
-    const { error } = await supabaseBrowser().auth.signUp({
+    const { data, error } = await supabaseBrowser().auth.signUp({
       email,
       password: form.password,
       options: {
@@ -64,6 +66,14 @@ export default function Daftar() {
     });
     setBusy(false);
     if (error) return setErr(authErrorText(error.message));
+    // Jika konfirmasi email dimatikan di Supabase, sesi langsung tersedia.
+    if (data.session) {
+      router.replace("/akun?baru=1");
+      router.refresh();
+      return;
+    }
+    // Email sudah terdaftar (Supabase mengembalikan user tanpa identitas).
+    if (data.user && (data.user.identities?.length ?? 0) === 0) return setErr("Email ini sudah terdaftar. Silakan masuk atau atur ulang kata sandi.");
     setSentTo(email);
   }
 

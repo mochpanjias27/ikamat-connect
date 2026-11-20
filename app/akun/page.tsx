@@ -29,6 +29,7 @@ export default function Akun() {
       const { data: u } = await sb.auth.getUser();
       if (!u.user) return router.replace("/akun/masuk");
       if (new URLSearchParams(window.location.search).get("sandi") === "ok") setMsg({ tone: "ok", text: "Kata sandi berhasil diperbarui." });
+      if (new URLSearchParams(window.location.search).get("baru") === "1") setMsg({ tone: "ok", text: "Selamat datang di IKAMAT Connect! Akun Anda sudah dibuat. Lengkapi profil di bawah sambil menunggu verifikasi admin." });
       const { data, error } = await sb.from("profiles").select("*").eq("id", u.user.id).maybeSingle();
       if (error || !data) {
         setMissingTable(true);
