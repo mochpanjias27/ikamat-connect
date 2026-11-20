@@ -135,6 +135,8 @@ begin
          new.npm is distinct from old.npm
       or new.nidn is distinct from old.nidn
       or new.status is distinct from old.status
+      or new.angkatan is distinct from old.angkatan
+      or new.tahun_lulus is distinct from old.tahun_lulus
       or new.full_name is distinct from old.full_name) then
       new.verification_status := 'pending';
       new.verified_at := null;

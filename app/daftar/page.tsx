@@ -25,11 +25,11 @@ export default function Daftar() {
     if (!/^\S+@\S+\.\S+$/.test(form.email.trim())) return "Format email tidak valid.";
     if (form.password.length < 8 || !/[A-Za-z]/.test(form.password) || !/\d/.test(form.password)) return "Kata sandi minimal 8 karakter dan memuat huruf serta angka.";
     if (form.password !== form.password2) return "Konfirmasi kata sandi tidak sama.";
-    if (status !== "dosen" && !/^\d{10,15}$/.test(form.npm.trim())) return "NPM harus berupa 10–15 digit angka.";
+    if (status === "mahasiswa" && !/^\d{10,15}$/.test(form.npm.trim())) return "NPM harus berupa 10–15 digit angka.";
     if (status === "dosen" && !/^\d{10}$/.test(form.nidn.trim())) return "NIDN harus 10 digit angka.";
     if (status !== "dosen") {
       const a = Number(form.angkatan);
-      if (!a || a < 1957 || a > THIS_YEAR) return "Isi tahun angkatan dengan benar.";
+      if (!a || a < 1957 || a > THIS_YEAR) return "Isi tahun masuk (angkatan) dengan benar.";
     }
     if (status === "alumni") {
       const l = Number(form.tahun_lulus);
@@ -54,7 +54,7 @@ export default function Daftar() {
         data: {
           full_name: form.full_name.trim(),
           status,
-          npm: status === "dosen" ? "" : form.npm.trim(),
+          npm: status === "mahasiswa" ? form.npm.trim() : "",
           nidn: status === "dosen" ? form.nidn.trim() : "",
           angkatan: status === "dosen" ? "" : form.angkatan,
           tahun_lulus: status === "alumni" ? form.tahun_lulus : "",
@@ -118,17 +118,17 @@ export default function Daftar() {
         </Field>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          {status !== "dosen" ? (
+          {status === "mahasiswa" ? (
             <Field label="NPM" required hint="Dipakai untuk verifikasi, tidak ditampilkan publik.">
               <input className={inputCls} value={form.npm} onChange={set("npm")} inputMode="numeric" placeholder="1408xxxxxxxx" />
             </Field>
-          ) : (
+          ) : status === "dosen" ? (
             <Field label="NIDN" required hint="10 digit, untuk verifikasi.">
               <input className={inputCls} value={form.nidn} onChange={set("nidn")} inputMode="numeric" />
             </Field>
-          )}
+          ) : null}
           {status !== "dosen" && (
-            <Field label="Angkatan" required>
+            <Field label="Tahun masuk (angkatan)" required>
               <input className={inputCls} value={form.angkatan} onChange={set("angkatan")} inputMode="numeric" placeholder="2020" maxLength={4} />
             </Field>
           )}
@@ -138,6 +138,10 @@ export default function Daftar() {
             </Field>
           )}
         </div>
+
+        {status === "alumni" && (
+          <p className="-mt-2 text-xs text-ink-500">Alumni tidak perlu NPM. Verifikasi dilakukan admin IKAMAT dengan mencocokkan nama, tahun masuk, dan tahun lulus.</p>
+        )}
 
         <Field label="Email" required hint={status === "mahasiswa" ? "Disarankan email @mail.unpad.ac.id agar verifikasi lebih cepat." : status === "dosen" ? "Disarankan email @unpad.ac.id." : "Email pribadi yang aktif."}>
           <input className={inputCls} type="email" value={form.email} onChange={set("email")} autoComplete="email" />

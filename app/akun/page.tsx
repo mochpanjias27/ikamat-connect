@@ -120,15 +120,13 @@ export default function Akun() {
       <div className="mt-6 grid gap-6 lg:grid-cols-[1.4fr_.9fr]">
         <Card className="p-6">
           <h2 className="text-lg font-bold text-ink-900">Data diri dan karier</h2>
-          <p className="mt-1 text-sm text-ink-500">Mengubah nama, status, NPM, atau NIDN akan meminta verifikasi ulang.</p>
+          <p className="mt-1 text-sm text-ink-500">Mengubah nama, status, NPM, NIDN, atau tahun masuk/lulus akan meminta verifikasi ulang.</p>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2"><Field label="Nama lengkap"><input className={inputCls} {...d("full_name")} /></Field></div>
-            {isStudentLike ? (
-              <Field label="NPM"><input className={inputCls} inputMode="numeric" {...d("npm")} /></Field>
-            ) : (
-              <Field label="NIDN"><input className={inputCls} inputMode="numeric" {...d("nidn")} /></Field>
-            )}
-            {isStudentLike && <Field label="Angkatan"><input className={inputCls} inputMode="numeric" maxLength={4} {...d("angkatan")} /></Field>}
+            {profile.status === "mahasiswa" && <Field label="NPM"><input className={inputCls} inputMode="numeric" {...d("npm")} /></Field>}
+            {profile.status === "alumni" && <Field label="NPM (opsional)" hint="Boleh dikosongkan bila lupa."><input className={inputCls} inputMode="numeric" {...d("npm")} /></Field>}
+            {profile.status === "dosen" && <Field label="NIDN"><input className={inputCls} inputMode="numeric" {...d("nidn")} /></Field>}
+            {isStudentLike && <Field label="Tahun masuk (angkatan)"><input className={inputCls} inputMode="numeric" maxLength={4} {...d("angkatan")} /></Field>}
             {profile.status === "alumni" && <Field label="Tahun lulus"><input className={inputCls} inputMode="numeric" maxLength={4} {...d("tahun_lulus")} /></Field>}
             <Field label="Nomor WhatsApp" hint="Tidak pernah ditampilkan publik."><input className={inputCls} inputMode="tel" {...d("phone")} /></Field>
             <Field label="Kota domisili"><input className={inputCls} {...d("city")} /></Field>
@@ -204,7 +202,7 @@ function VerificationBanner({ p }: { p: Profile }) {
       <Clock className="mt-0.5 shrink-0 text-sun-700" size={22} />
       <div>
         <p className="font-bold text-ink-900">Menunggu verifikasi admin</p>
-        <p className="text-sm text-ink-700">Admin IKAMAT akan mencocokkan nama dan {p.status === "dosen" ? "NIDN" : "NPM"} Anda. Sambil menunggu, lengkapi profil di bawah.</p>
+        <p className="text-sm text-ink-700">Admin IKAMAT akan mencocokkan {p.status === "alumni" ? "nama, tahun masuk, dan tahun lulus" : p.status === "dosen" ? "nama dan NIDN" : "nama dan NPM"} Anda. Sambil menunggu, lengkapi profil di bawah.</p>
       </div>
     </div>
   );
