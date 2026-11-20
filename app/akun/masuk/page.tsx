@@ -18,7 +18,7 @@ export default function MasukAkun() {
 
   useEffect(() => {
     const g = new URLSearchParams(window.location.search).get("galat");
-    if (g) setErr("Tautan dari email tidak valid atau sudah kedaluwarsa. Silakan masuk, atau minta tautan baru lewat Lupa kata sandi.");
+    if (g) setInfo("Jika Anda membuka tautan konfirmasi di perangkat atau peramban yang berbeda dari saat mendaftar, email Anda biasanya sudah terkonfirmasi. Silakan masuk di bawah. Jika masih gagal, minta tautan baru lewat Lupa kata sandi.");
     supabaseBrowser()
       .auth.getUser()
       .then(({ data }) => {
