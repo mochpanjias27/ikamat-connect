@@ -82,7 +82,7 @@ export default function Verifikasi() {
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <p className="mb-1 text-sm font-semibold uppercase tracking-wide text-sky-600">Admin IKAMAT</p>
       <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 md:text-3xl">Verifikasi akun</h1>
-      <p className="mt-2 max-w-2xl text-ink-500">Mahasiswa: cocokkan nama dan NPM. Alumni: cocokkan nama, tahun masuk, dan tahun lulus dengan daftar alumni IKAMAT atau PDDikti. Dosen: cocokkan nama dan NIDN.</p>
+      <p className="mt-2 max-w-2xl text-ink-500">Mahasiswa: cocokkan nama dan NPM. Alumni: cocokkan nama, tahun masuk, dan tahun lulus dengan daftar alumni IKAMAT atau PDDikti. Dosen: cocokkan nama dengan NIDN (10 digit) atau NUPTK (16 digit) di PDDikti.</p>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex gap-1 overflow-x-auto rounded-xl bg-ink-100 p-1">
@@ -110,7 +110,7 @@ export default function Verifikasi() {
                 </div>
                 <p className="mt-1 break-all text-sm text-ink-500">{p.email}</p>
                 <dl className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1 text-sm sm:grid-cols-4">
-                  <div><dt className="text-xs text-ink-400">{p.status === "dosen" ? "NIDN" : "NPM"}</dt><dd className="font-mono text-ink-800">{(p.status === "dosen" ? p.nidn : p.npm) || "–"}</dd></div>
+                  <div><dt className="text-xs text-ink-400">{p.status === "dosen" ? ((p.nidn || "").length === 16 ? "NUPTK" : "NIDN") : "NPM"}</dt><dd className="font-mono text-ink-800">{(p.status === "dosen" ? p.nidn : p.npm) || "–"}</dd></div>
                   {p.status !== "dosen" && <div><dt className="text-xs text-ink-400">Masuk</dt><dd className="text-ink-800">{p.angkatan ?? "–"}</dd></div>}
                   {p.status === "alumni" && <div><dt className="text-xs text-ink-400">Lulus</dt><dd className="text-ink-800">{p.tahun_lulus ?? "–"}</dd></div>}
                   <div><dt className="text-xs text-ink-400">Daftar</dt><dd className="text-ink-800">{new Date(p.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}</dd></div>

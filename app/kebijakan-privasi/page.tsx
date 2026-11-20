@@ -28,7 +28,7 @@ export default function KebijakanPrivasi() {
       <S n={1} title="Data yang kami kumpulkan">
         <ul>
           <li>Data akun: nama lengkap, email, kata sandi (tersimpan dalam bentuk hash, tidak dapat kami baca).</li>
-          <li>Data verifikasi: status (mahasiswa, alumni, dosen), NPM atau NIDN, angkatan, dan tahun lulus.</li>
+          <li>Data verifikasi: status (mahasiswa, alumni, dosen), NPM, NIDN, atau NUPTK, angkatan, dan tahun lulus.</li>
           <li>Data profil yang Anda isi sendiri: nomor WhatsApp, kota, headline, instansi, jabatan, keahlian, ringkasan diri, dan tautan LinkedIn.</li>
           <li>Riwayat persetujuan: tujuan yang Anda setujui atau tolak beserta waktunya.</li>
           <li>Data teknis minimum untuk keamanan login (cookie sesi).</li>
@@ -50,7 +50,7 @@ export default function KebijakanPrivasi() {
           <li>Anda sendiri, kapan saja melalui halaman Akun.</li>
           <li>Admin IKAMAT yang ditunjuk, untuk verifikasi dan moderasi. Setiap tindakan verifikasi dicatat dalam log audit.</li>
           <li>Civitas atau HRD hanya sebatas tujuan yang Anda setujui di atas.</li>
-          <li>NPM, NIDN, nomor WhatsApp, dan email tidak pernah ditampilkan publik.</li>
+          <li>NPM, NIDN, NUPTK, nomor WhatsApp, dan email tidak pernah ditampilkan publik.</li>
         </ul>
       </S>
 

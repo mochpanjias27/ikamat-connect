@@ -26,7 +26,7 @@ export default function Daftar() {
     if (form.password.length < 8 || !/[A-Za-z]/.test(form.password) || !/\d/.test(form.password)) return "Kata sandi minimal 8 karakter dan memuat huruf serta angka.";
     if (form.password !== form.password2) return "Konfirmasi kata sandi tidak sama.";
     if (status === "mahasiswa" && !/^\d{10,15}$/.test(form.npm.trim())) return "NPM harus berupa 10–15 digit angka.";
-    if (status === "dosen" && !/^\d{10}$/.test(form.nidn.trim())) return "NIDN harus 10 digit angka.";
+    if (status === "dosen" && !/^(\d{10}|\d{16})$/.test(form.nidn.trim())) return "Isi NIDN (10 digit) atau NUPTK (16 digit), angka saja.";
     if (status !== "dosen") {
       const a = Number(form.angkatan);
       if (!a || a < 1957 || a > THIS_YEAR) return "Isi tahun masuk (angkatan) dengan benar.";
@@ -123,8 +123,8 @@ export default function Daftar() {
               <input className={inputCls} value={form.npm} onChange={set("npm")} inputMode="numeric" placeholder="1408xxxxxxxx" />
             </Field>
           ) : status === "dosen" ? (
-            <Field label="NIDN" required hint="10 digit, untuk verifikasi.">
-              <input className={inputCls} value={form.nidn} onChange={set("nidn")} inputMode="numeric" />
+            <Field label="NIDN / NUPTK" required hint="NIDN 10 digit atau NUPTK 16 digit, untuk verifikasi.">
+              <input className={inputCls} value={form.nidn} onChange={set("nidn")} inputMode="numeric" maxLength={16} />
             </Field>
           ) : null}
           {status !== "dosen" && (
