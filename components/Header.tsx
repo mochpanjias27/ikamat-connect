@@ -198,7 +198,7 @@ export function Header() {
               </>
             )
           )}
-          <RoleSwitcher />
+          {!(authed && role === "guest") && <RoleSwitcher />}
           <button className="rounded-lg p-2 text-ink-600 hover:bg-ink-100 md:hidden" onClick={() => setMobile((m) => !m)} aria-label="Menu">
             {mobile ? <X size={20} /> : <Menu size={20} />}
           </button>
