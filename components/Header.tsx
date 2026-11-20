@@ -11,6 +11,13 @@ import { Logo } from "./Logo";
 import { Avatar, Button, Modal, cn } from "./ui";
 import { PhotoUpload } from "./PhotoUpload";
 
+const REAL_NAV: { href: string; label: string }[] = [
+  { href: "/akun", label: "Dashboard" },
+  { href: "/akun/lowongan", label: "Lowongan" },
+  { href: "/akun/riset", label: "Riset" },
+  { href: "/akun/jejaring", label: "Jejaring" },
+];
+
 const NAV: Record<AppRole, { href: string; label: string }[]> = {
   guest: [
     { href: "/", label: "Beranda" },
@@ -156,12 +163,13 @@ export function Header() {
     const { data: sub } = sb.auth.onAuthStateChange((_e, session) => setAuthed(!!session));
     return () => sub.subscription.unsubscribe();
   }, []);
-  const items = NAV[role];
-  const active = (href: string) => (href === "/" ? path === "/" : path === href || (href !== "/lowongan" && path.startsWith(href + "/")) || (href === "/lowongan" && path.startsWith("/lowongan") && !path.startsWith("/lowongan/baru")));
+  const realMode = authed && role === "guest";
+  const items = realMode ? REAL_NAV : NAV[role];
+  const active = (href: string) => (href === "/" || href === "/akun" ? path === href : path === href || (href !== "/lowongan" && path.startsWith(href + "/")) || (href === "/lowongan" && path.startsWith("/lowongan") && !path.startsWith("/lowongan/baru")));
   return (
     <header className="sticky top-0 z-40 border-b border-ink-200/70 bg-white/90 backdrop-blur">
       <div className="bg-sun-400 text-center text-[12px] font-semibold text-ink-900">
-        <span className="inline-block px-4 py-1">Pendaftaran akun sudah dibuka · direktori, lowongan, dan katalog masih berisi data simulasi</span>
+        <span className="inline-block px-4 py-1">{realMode ? "IKAMAT Connect · jejaring, lowongan, dan riset civitas Matematika Unpad" : "Pendaftaran akun sudah dibuka · halaman demo ini berisi data simulasi"}</span>
       </div>
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4 sm:px-6">
         <Link href="/" className="shrink-0">
@@ -232,6 +240,26 @@ export function Header() {
 }
 
 export function Footer() {
+  const [authed, setAuthed] = useState(false);
+  useEffect(() => {
+    const sb = supabaseBrowser();
+    sb.auth.getSession().then(({ data }) => setAuthed(!!data.session));
+    const { data: sub } = sb.auth.onAuthStateChange((_e, session) => setAuthed(!!session));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+  const links = authed
+    ? [
+        { href: "/akun/lowongan", label: "Lowongan & Magang" },
+        { href: "/akun/riset", label: "Kemitraan Riset" },
+        { href: "/akun/jejaring", label: "Jejaring Civitas" },
+        { href: "/kebijakan-privasi", label: "Kebijakan Privasi" },
+      ]
+    : [
+        { href: "/lowongan", label: "Lowongan & Magang (demo)" },
+        { href: "/talenta", label: "Katalog Talenta untuk HRD (demo)" },
+        { href: "/kemitraan", label: "Kemitraan Riset (demo)" },
+        { href: "/kebijakan-privasi", label: "Kebijakan Privasi" },
+      ];
   return (
     <footer className="mt-20 bg-sky-950 text-sky-100">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-3">
@@ -244,16 +272,15 @@ export function Footer() {
         <div className="text-sm">
           <p className="mb-3 font-bold text-white">Platform</p>
           <ul className="space-y-2 text-sky-200/80">
-            <li><Link href="/lowongan" className="hover:text-white">Lowongan & Magang</Link></li>
-            <li><Link href="/talenta" className="hover:text-white">Katalog Talenta untuk HRD</Link></li>
-            <li><Link href="/kemitraan" className="hover:text-white">Kemitraan Riset</Link></li>
-            <li><Link href="/kebijakan-privasi" className="hover:text-white">Kebijakan Privasi</Link></li>
+            {links.map((l) => (
+              <li key={l.href}><Link href={l.href} className="hover:text-white">{l.label}</Link></li>
+            ))}
           </ul>
         </div>
         <div className="text-sm">
           <p className="mb-3 font-bold text-white">Status platform</p>
           <p className="text-sky-200/80">
-            Pendaftaran dan verifikasi akun sudah berjalan dengan data sungguhan. Direktori, lowongan, dan katalog yang tampil masih data simulasi untuk demonstrasi.
+            Akun terdaftar memakai data sungguhan: lowongan, kebutuhan riset, dan jejaring civitas. Mode demo untuk presentasi tetap tersedia dengan data simulasi.
           </p>
         </div>
       </div>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { CheckCircle2, Clock, LogOut, ShieldAlert, ShieldCheck, Users } from "lucide-react";
+import { Briefcase, CheckCircle2, Clock, FlaskConical, LogOut, Plus, ShieldAlert, ShieldCheck, UserSearch, Users } from "lucide-react";
 import { Badge, Button, Card, inputCls, Toggle } from "@/components/ui";
 import { Alert, Field } from "@/components/AuthShell";
 import { CONSENT_LABEL, ConsentPurpose, Profile, supabaseBrowser } from "@/lib/supabase/client";
@@ -115,6 +115,7 @@ export default function Akun() {
       </div>
 
       <VerificationBanner p={profile} />
+      <QuickActions p={profile} />
 
       {msg && <div className="mt-4"><Alert tone={msg.tone}>{msg.text}</Alert></div>}
 
@@ -167,9 +168,9 @@ export default function Akun() {
             </div>
           </Card>
           <Card className="p-6 text-sm text-ink-600">
-            <h2 className="text-lg font-bold text-ink-900">Fitur berikutnya</h2>
-            <p className="mt-2">Direktori, lowongan, dan katalog talenta di situs ini masih memakai data simulasi. Setelah cukup banyak akun terverifikasi, fitur-fitur itu akan memakai data akun sungguhan.</p>
-            <Link href="/" className="mt-3 inline-block font-semibold text-sky-700 underline">Lihat beranda</Link>
+            <h2 className="text-lg font-bold text-ink-900">Tips agar mudah ditemukan</h2>
+            <p className="mt-2">Isi headline, keahlian, dan instansi, lalu aktifkan &quot;Tampil di direktori civitas&quot;. Profil inilah yang dilihat dosen dan alumni saat Anda menyatakan minat pada lowongan atau riset.</p>
+            <Link href="/akun/jejaring" className="mt-3 inline-block font-semibold text-sky-700 underline">Buka Jejaring</Link>
           </Card>
         </div>
       </div>
@@ -204,6 +205,62 @@ function VerificationBanner({ p }: { p: Profile }) {
       <div>
         <p className="font-bold text-ink-900">Menunggu verifikasi admin</p>
         <p className="text-sm text-ink-700">Admin IKAMAT akan mencocokkan {p.status === "alumni" ? "nama, tahun masuk, dan tahun lulus" : p.status === "dosen" ? "nama dan email Unpad" : "nama dan NPM"} Anda. Sambil menunggu, lengkapi profil di bawah.</p>
+      </div>
+    </div>
+  );
+}
+
+function QuickActions({ p }: { p: Profile }) {
+  const [stats, setStats] = useState<{ jobs: number; research: number; incoming: number } | null>(null);
+  useEffect(() => {
+    const sb = supabaseBrowser();
+    (async () => {
+      const today = new Date().toISOString().slice(0, 10);
+      const [j, r, c] = await Promise.all([
+        sb.from("jobs").select("id", { count: "exact", head: true }).eq("status", "aktif").or(`deadline.is.null,deadline.gte.${today}`),
+        sb.from("research_posts").select("id", { count: "exact", head: true }).eq("status", "aktif").or(`deadline.is.null,deadline.gte.${today}`),
+        sb.from("contact_requests").select("id", { count: "exact", head: true }).eq("to_id", p.id).eq("status", "menunggu"),
+      ]);
+      setStats({ jobs: j.count ?? 0, research: r.count ?? 0, incoming: c.count ?? 0 });
+    })();
+  }, [p.id]);
+
+  type A = { href: string; icon: React.ReactNode; title: string; desc: string; primary?: boolean };
+  const actions: A[] =
+    p.status === "dosen"
+      ? [
+          { href: "/akun/riset/baru", icon: <Plus size={18} />, title: "Posting kebutuhan riset", desc: "Hibah, mitra riset, atau asisten riset.", primary: true },
+          { href: "/akun/jejaring?status=alumni", icon: <UserSearch size={18} />, title: "Cari mitra alumni", desc: "Telusuri alumni berdasarkan keahlian dan instansi." },
+          { href: "/akun/lowongan/baru", icon: <Briefcase size={18} />, title: "Posting lowongan", desc: "Bagikan lowongan atau magang untuk mahasiswa." },
+        ]
+      : p.status === "alumni"
+        ? [
+            { href: "/akun/lowongan/baru", icon: <Plus size={18} />, title: "Posting lowongan", desc: "Kerja, magang, atau proyek dari tempat Anda.", primary: true },
+            { href: "/akun/riset", icon: <FlaskConical size={18} />, title: "Jadi mitra riset dosen", desc: `${stats?.research ?? "…"} kebutuhan riset aktif.` },
+            { href: "/akun/jejaring", icon: <UserSearch size={18} />, title: "Jejaring civitas", desc: "Temukan rekan alumni, dosen, dan talenta mahasiswa." },
+          ]
+        : [
+            { href: "/akun/lowongan", icon: <Briefcase size={18} />, title: "Cari magang & lowongan", desc: `${stats?.jobs ?? "…"} lowongan aktif dari alumni.`, primary: true },
+            { href: "/akun/riset", icon: <FlaskConical size={18} />, title: "Riset bersama dosen", desc: `${stats?.research ?? "…"} kesempatan riset aktif.` },
+            { href: "/akun/jejaring?status=alumni", icon: <UserSearch size={18} />, title: "Temukan mentor alumni", desc: "Ajak terhubung untuk mentoring karier." },
+          ];
+
+  return (
+    <div className="mt-6">
+      {stats && stats.incoming > 0 && (
+        <Link href="/akun/jejaring?tab=permintaan" className="mb-4 flex items-center justify-between rounded-2xl bg-sky-600 px-5 py-4 text-white shadow-sm hover:bg-sky-700">
+          <span className="font-semibold">{stats.incoming} permintaan terhubung menunggu jawaban Anda</span>
+          <span className="text-sm font-bold">Lihat →</span>
+        </Link>
+      )}
+      <div className="grid gap-4 md:grid-cols-3">
+        {actions.map((a) => (
+          <Link key={a.href} href={a.href} className={`rounded-2xl p-5 shadow-card ring-1 transition hover:-translate-y-0.5 ${a.primary ? "bg-sky-950 text-white ring-sky-950" : "bg-white text-ink-900 ring-ink-200/60"}`}>
+            <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${a.primary ? "bg-sun-400 text-ink-900" : "bg-sky-50 text-sky-700"}`}>{a.icon}</span>
+            <p className="mt-3 font-bold">{a.title}</p>
+            <p className={`mt-1 text-sm ${a.primary ? "text-sky-200" : "text-ink-500"}`}>{a.desc}</p>
+          </Link>
+        ))}
       </div>
     </div>
   );

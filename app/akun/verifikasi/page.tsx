@@ -21,6 +21,8 @@ export default function Verifikasi() {
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [err, setErr] = useState("");
   const [q, setQ] = useState("");
+  const [sel, setSel] = useState<Set<string>>(new Set());
+  const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
     const { data, error } = await sb.from("profiles").select("*").order("created_at", { ascending: false }).limit(500);
@@ -45,6 +47,26 @@ export default function Verifikasi() {
       if (ok) load();
     })();
   }, [router, sb, load]);
+
+  async function approveSelected() {
+    const ids = Array.from(sel);
+    if (!ids.length) return;
+    if (!window.confirm(`Setujui ${ids.length} akun terpilih?`)) return;
+    setBusy(true);
+    setErr("");
+    const { error } = await sb
+      .from("profiles")
+      .update({ verification_status: "verified", verification_note: null, verified_at: new Date().toISOString(), verified_by: me })
+      .in("id", ids);
+    if (error) {
+      setBusy(false);
+      return setErr(error.message);
+    }
+    await sb.from("verification_log").insert(ids.map((id) => ({ profile_id: id, admin_id: me, action: "verified" })));
+    setSel(new Set());
+    setBusy(false);
+    load();
+  }
 
   async function act(p: Profile, action: "verified" | "rejected" | "reset") {
     setErr("");
@@ -87,7 +109,7 @@ export default function Verifikasi() {
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex gap-1 overflow-x-auto rounded-xl bg-ink-100 p-1">
           {(Object.keys(TAB_LABEL) as Tab[]).map((t) => (
-            <button key={t} onClick={() => setTab(t)} className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold ${tab === t ? "bg-white text-sky-700 shadow-sm" : "text-ink-600"}`}>
+            <button key={t} onClick={() => { setTab(t); setSel(new Set()); }} className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold ${tab === t ? "bg-white text-sky-700 shadow-sm" : "text-ink-600"}`}>
               {TAB_LABEL[t]} <span className="ml-1 text-ink-400">{counts[t]}</span>
             </button>
           ))}
@@ -97,12 +119,37 @@ export default function Verifikasi() {
 
       {err && <div className="mt-4"><Alert tone="error">{err}</Alert></div>}
 
+      {tab === "pending" && shown.length > 0 && (
+        <div className="sticky top-[104px] z-10 mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/95 p-3 shadow-card ring-1 ring-ink-200/60 backdrop-blur">
+          <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-ink-700">
+            <input
+              type="checkbox"
+              className="h-4 w-4 accent-sky-600"
+              checked={shown.length > 0 && shown.every((p) => sel.has(p.id))}
+              onChange={(e) => setSel(e.target.checked ? new Set(shown.map((p) => p.id)) : new Set())}
+            />
+            Pilih semua yang tampil ({shown.length})
+          </label>
+          <Button onClick={approveSelected} disabled={!sel.size || busy}><Check size={16} /> {busy ? "Memproses…" : `Setujui terpilih (${sel.size})`}</Button>
+        </div>
+      )}
+
       <div className="mt-6 space-y-3">
         {shown.length === 0 && <Card className="p-8 text-center text-ink-500">Tidak ada akun di daftar ini.</Card>}
         {shown.map((p) => (
           <Card key={p.id} className="p-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-              <div className="min-w-0">
+              <div className="flex min-w-0 gap-3">
+                {tab === "pending" && (
+                  <input
+                    type="checkbox"
+                    aria-label={`Pilih ${p.full_name}`}
+                    className="mt-1 h-4 w-4 shrink-0 accent-sky-600"
+                    checked={sel.has(p.id)}
+                    onChange={(e) => setSel((x) => { const n = new Set(x); if (e.target.checked) n.add(p.id); else n.delete(p.id); return n; })}
+                  />
+                )}
+                <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="font-bold text-ink-900">{p.full_name || "(tanpa nama)"}</p>
                   <Badge tone="sky"><span className="capitalize">{p.status}</span></Badge>
@@ -116,6 +163,7 @@ export default function Verifikasi() {
                   <div><dt className="text-xs text-ink-400">Daftar</dt><dd className="text-ink-800">{new Date(p.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}</dd></div>
                 </dl>
                 {p.verification_note && <p className="mt-2 text-sm text-red-700">Catatan: {p.verification_note}</p>}
+                </div>
               </div>
               <div className="flex w-full flex-col gap-2 lg:w-80">
                 {tab === "pending" && (
