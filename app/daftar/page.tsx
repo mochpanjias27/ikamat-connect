@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MailCheck } from "lucide-react";
 import { Button, inputCls } from "@/components/ui";
 import { Alert, AuthShell, Field } from "@/components/AuthShell";
@@ -14,6 +14,10 @@ const THIS_YEAR = new Date().getFullYear();
 export default function Daftar() {
   const router = useRouter();
   const [status, setStatus] = useState<Status>("mahasiswa");
+  useEffect(() => {
+    const s = new URLSearchParams(window.location.search).get("status");
+    if (s === "mahasiswa" || s === "alumni" || s === "dosen") setStatus(s);
+  }, []);
   const [form, setForm] = useState({ full_name: "", email: "", password: "", password2: "", npm: "", nidn: "", angkatan: "", tahun_lulus: "" });
   const [consents, setConsents] = useState<Record<ConsentPurpose, boolean>>({ terms: false, directory: true, job_email: true, hrd_catalog: false });
   const [err, setErr] = useState("");

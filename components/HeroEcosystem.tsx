@@ -1,44 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Briefcase, Building2, FlaskConical, GraduationCap, Mail } from "lucide-react";
+import { Briefcase, FlaskConical, GraduationCap, Handshake, Sparkles } from "lucide-react";
 import { LogoMark } from "./Logo";
 
-type Counts = { students: number; alumni: number; lecturers: number; catalog: number };
-
 const NODES = [
-  { key: "students", label: "Mahasiswa", sub: "mencari magang", icon: GraduationCap, x: 22, y: 15, drift: "drift-a", dur: 6.5 },
-  { key: "alumni", label: "Alumni", sub: "posting lowongan", icon: Briefcase, x: 78, y: 15, drift: "drift-b", dur: 7.5 },
-  { key: "catalog", label: "Katalog HRD", sub: "kandidat bersedia", icon: Building2, x: 78, y: 72, drift: "drift-c", dur: 8 },
-  { key: "lecturers", label: "Dosen", sub: "mencari mitra riset", icon: FlaskConical, x: 22, y: 72, drift: "drift-d", dur: 7 },
+  { key: "students", label: "Mahasiswa", sub: "magang & mentor alumni", icon: GraduationCap, x: 22, y: 15, drift: "drift-a", dur: 6.5 },
+  { key: "alumni", label: "Alumni", sub: "lowongan & jejaring", icon: Briefcase, x: 78, y: 15, drift: "drift-b", dur: 7.5 },
+  { key: "projects", label: "Project", sub: "kebutuhan & penyedia jasa", icon: Handshake, x: 78, y: 72, drift: "drift-c", dur: 8 },
+  { key: "lecturers", label: "Dosen", sub: "kebutuhan riset & mitra", icon: FlaskConical, x: 22, y: 72, drift: "drift-d", dur: 7 },
 ] as const;
 
 type Key = (typeof NODES)[number]["key"];
 
-/** Angka naik dari 0 saat pertama tampil. */
-function useCountUp(target: number, ms = 1200) {
-  const [v, setV] = useState(0);
-  useEffect(() => {
-    let raf = 0;
-    const t0 = performance.now();
-    const tick = (t: number) => {
-      const k = Math.min(1, (t - t0) / ms);
-      setV(Math.round(target * (1 - Math.pow(1 - k, 3))));
-      if (k < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [target, ms]);
-  return v;
-}
-
-function Count({ n }: { n: number }) {
-  return <>{useCountUp(n)}</>;
-}
-
-/** Visual hero: peta ekosistem civitas, hanya angka agregat tanpa data pribadi. */
-export function HeroEcosystem({ counts, sent }: { counts: Counts; sent: number }) {
-  const total = counts.students + counts.alumni + counts.lecturers;
+/** Visual hero: peta ekosistem civitas dan fitur utama, tanpa angka atau data pribadi. */
+export function HeroEcosystem() {
   const [active, setActive] = useState(0);
   useEffect(() => {
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
@@ -47,10 +23,10 @@ export function HeroEcosystem({ counts, sent }: { counts: Counts; sent: number }
   }, []);
   const activeKey: Key = NODES[active].key;
   const messages: Record<Key, { title: string; body: React.ReactNode }> = {
-    students: { title: "Notifikasi otomatis terkirim", body: <>Lowongan <b>Magang Data Analyst</b> dari alumni dikirim ke <b>{sent} mahasiswa</b> yang sesuai kriteria.</> },
-    alumni: { title: "Lowongan baru dari alumni", body: <>Alumni menerbitkan lowongan <b>Actuarial Analyst</b> untuk fresh graduate berstatus <b>Open to Work</b>.</> },
-    catalog: { title: "Permintaan kontak HRD", body: <>HRD terverifikasi menghubungi kandidat lewat platform. <b>Kontak pribadi tetap tersembunyi</b> sampai kandidat setuju.</> },
-    lecturers: { title: "Kebutuhan riset dosen", body: <>Dosen mencari <b>mitra alumni sektor perbankan</b> untuk konsorsium hibah riset.</> },
+    students: { title: "Untuk mahasiswa", body: <>Temukan <b>magang dan lowongan</b> yang diposting langsung oleh alumni, lalu ajak alumni menjadi <b>mentor karier</b>.</> },
+    alumni: { title: "Untuk alumni", body: <>Posting <b>lowongan</b> dari tempat Anda bekerja dan lihat langsung siapa yang berminat, lengkap dengan profilnya.</> },
+    projects: { title: "Peluang project", body: <>Butuh sistem, transportasi, kontraktor, atau pelatihan? Posting kebutuhan dan terima <b>penawaran dari civitas</b> penyedia jasa.</> },
+    lecturers: { title: "Untuk dosen", body: <>Posting <b>kebutuhan riset dan hibah</b>, lalu cari mitra alumni berdasarkan keahlian dan instansinya.</> },
   };
   const msg = messages[activeKey];
   return (
@@ -107,14 +83,9 @@ export function HeroEcosystem({ counts, sent }: { counts: Counts; sent: number }
                   }`}
                 >
                   {on && <span className="absolute -right-1.5 -top-1.5 h-3.5 w-3.5 rounded-full bg-sun-400 ring-2 ring-white"><span className="absolute inset-0 animate-ping rounded-full bg-sun-400" /></span>}
-                  <div className="flex items-center gap-2">
-                    <span className={`flex h-8 w-8 items-center justify-center rounded-lg text-white transition-colors duration-500 ${on ? "bg-sun-500 text-ink-900" : "bg-sky-600"}`}>
-                      <Icon size={16} className={on ? "text-ink-900" : ""} />
-                    </span>
-                    <span className="text-2xl font-extrabold text-ink-900">
-                      <Count n={counts[n.key]} />
-                    </span>
-                  </div>
+                  <span className={`flex h-9 w-9 items-center justify-center rounded-lg text-white transition-colors duration-500 ${on ? "bg-sun-500 text-ink-900" : "bg-sky-600"}`}>
+                    <Icon size={18} className={on ? "text-ink-900" : ""} />
+                  </span>
                   <p className="mt-1.5 text-sm font-bold leading-tight">{n.label}</p>
                   <p className="text-[11px] leading-tight text-ink-500">{n.sub}</p>
                 </button>
@@ -124,14 +95,11 @@ export function HeroEcosystem({ counts, sent }: { counts: Counts; sent: number }
         })}
       </div>
 
-      {/* chip total */}
-      <div className="absolute right-0 -top-2 z-20 rotate-3 rounded-xl bg-sun-400 px-3 py-2 text-xs font-bold text-ink-900 shadow-lg">∑ {total} civitas terdata</div>
-
       {/* kartu notifikasi, tanpa nama */}
       <div className="relative mx-auto mt-4 w-full rounded-2xl sm:absolute sm:-bottom-16 sm:left-1/2 sm:mt-0 sm:w-80 sm:-translate-x-1/2 bg-ink-900 p-4 text-white shadow-2xl">
         <div key={activeKey} className="notif-in">
           <p className="flex items-center gap-2 text-xs font-semibold text-sun-300">
-            <Mail size={14} /> {msg.title}
+            <Sparkles size={14} /> {msg.title}
           </p>
           <p className="mt-1 min-h-[60px] text-sm">{msg.body}</p>
           <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/15">

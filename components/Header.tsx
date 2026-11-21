@@ -22,8 +22,7 @@ const REAL_NAV: { href: string; label: string }[] = [
 const NAV: Record<AppRole, { href: string; label: string }[]> = {
   guest: [
     { href: "/", label: "Beranda" },
-    { href: "/lowongan", label: "Lowongan" },
-    { href: "/talenta", label: "Katalog Talenta" },
+    { href: "/kebijakan-privasi", label: "Kebijakan Privasi" },
   ],
   student: [
     { href: "/dasbor", label: "Dashboard" },
@@ -170,7 +169,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-ink-200/70 bg-white/90 backdrop-blur">
       <div className="bg-sun-400 text-center text-[12px] font-semibold text-ink-900">
-        <span className="inline-block px-4 py-1">{realMode ? "IKAMAT Connect · lowongan, riset, project, dan jejaring civitas Matematika Unpad" : "Pendaftaran akun sudah dibuka · halaman demo ini berisi data simulasi"}</span>
+        <span className="inline-block px-4 py-1">{realMode ? "IKAMAT Connect · lowongan, riset, project, dan jejaring civitas Matematika Unpad" : role !== "guest" ? "Mode demo · seluruh nama, perusahaan, dan kontak adalah data simulasi" : "Pendaftaran akun IKAMAT Connect sudah dibuka untuk mahasiswa, alumni, dan dosen"}</span>
       </div>
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4 sm:px-6">
         <Link href="/" className="shrink-0">
@@ -207,7 +206,7 @@ export function Header() {
               </>
             )
           )}
-          {!(authed && role === "guest") && <RoleSwitcher />}
+          {role !== "guest" && <RoleSwitcher />}
           <button className="rounded-lg p-2 text-ink-600 hover:bg-ink-100 md:hidden" onClick={() => setMobile((m) => !m)} aria-label="Menu">
             {mobile ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -257,9 +256,9 @@ export function Footer() {
         { href: "/kebijakan-privasi", label: "Kebijakan Privasi" },
       ]
     : [
-        { href: "/lowongan", label: "Lowongan & Magang (demo)" },
-        { href: "/talenta", label: "Katalog Talenta untuk HRD (demo)" },
-        { href: "/kemitraan", label: "Kemitraan Riset (demo)" },
+        { href: "/", label: "Beranda" },
+        { href: "/daftar", label: "Daftar akun" },
+        { href: "/akun/masuk", label: "Masuk" },
         { href: "/kebijakan-privasi", label: "Kebijakan Privasi" },
       ];
   return (
@@ -280,9 +279,9 @@ export function Footer() {
           </ul>
         </div>
         <div className="text-sm">
-          <p className="mb-3 font-bold text-white">Status platform</p>
+          <p className="mb-3 font-bold text-white">Tentang</p>
           <p className="text-sky-200/80">
-            Akun terdaftar memakai data sungguhan: lowongan, kebutuhan riset, project, dan jejaring civitas. Mode demo untuk presentasi tetap tersedia dengan data simulasi.
+            Untuk mahasiswa, alumni, dan dosen Matematika FMIPA Universitas Padjadjaran. Setiap akun diverifikasi oleh admin IKAMAT.
           </p>
         </div>
       </div>
