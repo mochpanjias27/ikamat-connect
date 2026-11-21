@@ -77,7 +77,7 @@ export default function Saya() {
                 ) : (
                   <Toggle checked={me.openToWork} onChange={(v) => up({ openToWork: v })} label="Open to Work" desc="Anda menerima email lowongan kerja yang relevan dan dapat ditemukan HRD (bila diizinkan di bawah)." />
                 )}
-                <Toggle checked={me.openToProject} onChange={(v) => up({ openToProject: v })} label="Open to Project" desc="Terbuka untuk proyek lepas, konsultansi, atau kolaborasi riset." />
+                <Toggle checked={me.openToProject} onChange={(v) => up({ openToProject: v })} label="Open to Project" desc="Terbuka untuk project lepas, konsultansi, atau kolaborasi riset." />
               </div>
             </Card>
 

@@ -10,7 +10,7 @@ import { fmtDate, loadPosters, Poster, posterLine, Project, PROJECT_CAT, Respond
 
 type Tab = "semua" | "saya";
 
-export default function ProyekPortal() {
+export default function ProjectPortal() {
   const sb = supabaseBrowser();
   const { me, loading, verified } = useMe();
   const [items, setItems] = useState<Project[]>([]);
@@ -32,7 +32,7 @@ export default function ProyekPortal() {
   const load = useCallback(async () => {
     if (!me) return;
     const { data, error } = await sb.from("projects").select("*").order("created_at", { ascending: false }).limit(300);
-    if (error) return setErr(error.message.includes("does not exist") || error.message.includes("Could not find") ? "Fitur proyek belum diaktifkan admin (database belum diperbarui)." : error.message);
+    if (error) return setErr(error.message.includes("does not exist") || error.message.includes("Could not find") ? "Fitur project belum diaktifkan admin (database belum diperbarui)." : error.message);
     const list = (data || []) as Project[];
     setItems(list);
     setPosters(await loadPosters(list.map((p) => p.poster_id)));
@@ -79,8 +79,8 @@ export default function ProyekPortal() {
     setErr("");
     if (msg.trim().length < 20) return setErr("Tulis penawaran minimal 20 karakter: pengalaman, pendekatan, perkiraan biaya dan waktu.");
     const { error } = await sb.from("interests").insert({ post_type: "project", post_id: bidFor.id, message: msg.trim() });
-    if (error) return setErr(error.message.includes("duplicate") ? "Anda sudah mengajukan penawaran untuk proyek ini." : `Gagal: ${error.message}`);
-    setOk(`Penawaran Anda untuk "${bidFor.title}" terkirim. Pemilik proyek dapat melihat profil dan email Anda.`);
+    if (error) return setErr(error.message.includes("duplicate") ? "Anda sudah mengajukan penawaran untuk project ini." : `Gagal: ${error.message}`);
+    setOk(`Penawaran Anda untuk "${bidFor.title}" terkirim. Pemilik project dapat melihat profil dan email Anda.`);
     setBidFor(null);
     setMsg("");
     load();
@@ -98,7 +98,7 @@ export default function ProyekPortal() {
   }
 
   async function remove(p: Project) {
-    if (!window.confirm(`Hapus proyek "${p.title}"?`)) return;
+    if (!window.confirm(`Hapus project "${p.title}"?`)) return;
     const { error } = await sb.from("projects").delete().eq("id", p.id);
     if (error) return setErr(error.message);
     await sb.from("interests").delete().eq("post_type", "project").eq("post_id", p.id);
@@ -110,24 +110,24 @@ export default function ProyekPortal() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <PortalHeader
-        eyebrow="Peluang proyek"
-        title="Proyek dari jejaring IKAMAT"
-        desc="Butuh sistem, jasa transportasi, kontraktor, pelatihan, atau konsultan? Posting kebutuhan proyek, dan civitas yang punya usaha atau keahlian di bidang itu dapat mengajukan penawaran."
+        eyebrow="Peluang project"
+        title="Project dari jejaring IKAMAT"
+        desc="Butuh sistem, jasa transportasi, kontraktor, pelatihan, atau konsultan? Posting kebutuhan project, dan civitas yang punya usaha atau keahlian di bidang itu dapat mengajukan penawaran."
         actions={
           <>
             <Button variant="secondary" href="/akun/jejaring?penyedia=1"><UserSearch size={16} /> Cari penyedia jasa</Button>
-            {canPost && <Button href={verified ? "/akun/proyek/baru" : undefined} disabled={!verified}><Plus size={16} /> Posting proyek</Button>}
+            {canPost && <Button href={verified ? "/akun/project/baru" : undefined} disabled={!verified}><Plus size={16} /> Posting project</Button>}
           </>
         }
       />
-      <PendingNotice me={me} what={canPost ? "memposting proyek dan mengajukan penawaran" : "mengajukan penawaran"} />
+      <PendingNotice me={me} what={canPost ? "memposting project dan mengajukan penawaran" : "mengajukan penawaran"} />
       {err && <div className="mb-4"><Alert tone="error">{err}</Alert></div>}
       {ok && <div className="mb-4"><Alert tone="ok">{ok}</Alert></div>}
 
       <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex gap-1 overflow-x-auto rounded-xl bg-ink-100 p-1 lg:w-fit">
-          <button onClick={() => setTab("semua")} className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold ${tab === "semua" ? "bg-white text-sky-700 shadow-sm" : "text-ink-600"}`}>Semua proyek</button>
-          {canPost && <button onClick={() => setTab("saya")} className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold ${tab === "saya" ? "bg-white text-sky-700 shadow-sm" : "text-ink-600"}`}>Proyek saya</button>}
+          <button onClick={() => setTab("semua")} className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold ${tab === "semua" ? "bg-white text-sky-700 shadow-sm" : "text-ink-600"}`}>Semua project</button>
+          {canPost && <button onClick={() => setTab("saya")} className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold ${tab === "saya" ? "bg-white text-sky-700 shadow-sm" : "text-ink-600"}`}>Project saya</button>}
         </div>
         <div className="flex flex-col gap-2 sm:flex-row">
           <select className={`${inputCls} sm:w-56`} value={cat} onChange={(e) => setCat(e.target.value as typeof cat)} aria-label="Kategori">
@@ -136,16 +136,16 @@ export default function ProyekPortal() {
           </select>
           <div className="relative sm:w-72">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-400" />
-            <input className={`${inputCls} pl-9`} placeholder="Cari proyek, instansi, lokasi…" value={q} onChange={(e) => setQ(e.target.value)} />
+            <input className={`${inputCls} pl-9`} placeholder="Cari project, instansi, lokasi…" value={q} onChange={(e) => setQ(e.target.value)} />
           </div>
         </div>
       </div>
 
       {shown.length === 0 ? (
         <Empty
-          title={tab === "saya" ? "Anda belum memposting proyek" : "Belum ada proyek di kategori ini"}
-          desc={canPost ? "Posting kebutuhan proyek dari perusahaan atau instansi Anda agar civitas penyedia jasa dapat mengajukan penawaran." : "Proyek baru dari alumni dan dosen akan muncul di sini."}
-          action={canPost && verified ? <Button href="/akun/proyek/baru"><Plus size={16} /> Posting proyek</Button> : undefined}
+          title={tab === "saya" ? "Anda belum memposting project" : "Belum ada project di kategori ini"}
+          desc={canPost ? "Posting kebutuhan project dari perusahaan atau instansi Anda agar civitas penyedia jasa dapat mengajukan penawaran." : "Project baru dari alumni dan dosen akan muncul di sini."}
+          action={canPost && verified ? <Button href="/akun/project/baru"><Plus size={16} /> Posting project</Button> : undefined}
         />
       ) : (
         <div className="space-y-3">
@@ -229,9 +229,9 @@ export default function ProyekPortal() {
         {bidFor && (
           <div className="space-y-4">
             <p className="text-sm text-ink-600">
-              Pemilik proyek <b>{bidFor.title}</b> akan dapat melihat nama, status, headline, layanan yang Anda tawarkan, email, dan LinkedIn Anda.
+              Pemilik project <b>{bidFor.title}</b> akan dapat melihat nama, status, headline, layanan yang Anda tawarkan, email, dan LinkedIn Anda.
             </p>
-            <TextArea rows={6} maxLength={1500} placeholder={"Perkenalkan usaha/tim Anda, pengalaman proyek serupa, pendekatan, serta perkiraan biaya dan waktu pengerjaan."} value={msg} onChange={(e) => setMsg(e.target.value)} />
+            <TextArea rows={6} maxLength={1500} placeholder={"Perkenalkan usaha/tim Anda, pengalaman project serupa, pendekatan, serta perkiraan biaya dan waktu pengerjaan."} value={msg} onChange={(e) => setMsg(e.target.value)} />
             {err && <Alert tone="error">{err}</Alert>}
             <div className="flex justify-end gap-2">
               <Button variant="ghost" onClick={() => setBidFor(null)}>Batal</Button>

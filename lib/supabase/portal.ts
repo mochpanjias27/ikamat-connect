@@ -104,7 +104,7 @@ export type ContactItem = {
   created_at: string;
 };
 
-export const JOB_CAT: Record<Job["category"], string> = { kerja: "Kerja", magang: "Magang", freelance: "Freelance / Proyek" };
+export const JOB_CAT: Record<Job["category"], string> = { kerja: "Kerja", magang: "Magang", freelance: "Freelance / Project" };
 export const WORK_MODE: Record<Job["work_mode"], string> = { onsite: "Di kantor", hybrid: "Hybrid", remote: "Remote" };
 export const PROJECT_CAT: Record<Project["category"], string> = {
   teknologi: "Teknologi & software",

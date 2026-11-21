@@ -15,7 +15,7 @@ const REAL_NAV: { href: string; label: string }[] = [
   { href: "/akun", label: "Dashboard" },
   { href: "/akun/lowongan", label: "Lowongan" },
   { href: "/akun/riset", label: "Riset" },
-  { href: "/akun/proyek", label: "Proyek" },
+  { href: "/akun/project", label: "Project" },
   { href: "/akun/jejaring", label: "Jejaring" },
 ];
 
@@ -170,7 +170,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-ink-200/70 bg-white/90 backdrop-blur">
       <div className="bg-sun-400 text-center text-[12px] font-semibold text-ink-900">
-        <span className="inline-block px-4 py-1">{realMode ? "IKAMAT Connect · lowongan, riset, proyek, dan jejaring civitas Matematika Unpad" : "Pendaftaran akun sudah dibuka · halaman demo ini berisi data simulasi"}</span>
+        <span className="inline-block px-4 py-1">{realMode ? "IKAMAT Connect · lowongan, riset, project, dan jejaring civitas Matematika Unpad" : "Pendaftaran akun sudah dibuka · halaman demo ini berisi data simulasi"}</span>
       </div>
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4 sm:px-6">
         <Link href="/" className="shrink-0">
@@ -252,7 +252,7 @@ export function Footer() {
     ? [
         { href: "/akun/lowongan", label: "Lowongan & Magang" },
         { href: "/akun/riset", label: "Kemitraan Riset" },
-        { href: "/akun/proyek", label: "Peluang Proyek" },
+        { href: "/akun/project", label: "Peluang Project" },
         { href: "/akun/jejaring", label: "Jejaring Civitas" },
         { href: "/kebijakan-privasi", label: "Kebijakan Privasi" },
       ]
@@ -282,7 +282,7 @@ export function Footer() {
         <div className="text-sm">
           <p className="mb-3 font-bold text-white">Status platform</p>
           <p className="text-sky-200/80">
-            Akun terdaftar memakai data sungguhan: lowongan, kebutuhan riset, proyek, dan jejaring civitas. Mode demo untuk presentasi tetap tersedia dengan data simulasi.
+            Akun terdaftar memakai data sungguhan: lowongan, kebutuhan riset, project, dan jejaring civitas. Mode demo untuk presentasi tetap tersedia dengan data simulasi.
           </p>
         </div>
       </div>

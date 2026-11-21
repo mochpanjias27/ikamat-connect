@@ -8,7 +8,7 @@ import { Loading, PendingNotice, PortalHeader, TextArea } from "@/components/Por
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { Project, PROJECT_CAT, todayLocal, useMe, WORK_MODE } from "@/lib/supabase/portal";
 
-export default function PostingProyek() {
+export default function PostingProject() {
   const router = useRouter();
   const { me, loading, verified } = useMe();
   const [f, setF] = useState({
@@ -34,8 +34,8 @@ export default function PostingProyek() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setErr("");
-    if (f.title.trim().length < 5) return setErr("Isi judul proyek (minimal 5 karakter).");
-    if (f.organization.trim().length < 2) return setErr("Isi nama perusahaan atau instansi pemilik proyek.");
+    if (f.title.trim().length < 5) return setErr("Isi judul project (minimal 5 karakter).");
+    if (f.organization.trim().length < 2) return setErr("Isi nama perusahaan atau instansi pemilik project.");
     if (f.description.trim().length < 20) return setErr("Deskripsi minimal 20 karakter.");
     if (f.deadline && f.deadline < todayLocal()) return setErr("Batas penawaran tidak boleh di masa lalu.");
     setBusy(true);
@@ -55,21 +55,21 @@ export default function PostingProyek() {
         deadline: f.deadline || null,
       });
     setBusy(false);
-    if (error) return setErr(error.message.includes("row-level security") ? "Akun Anda belum terverifikasi atau tidak berhak memposting proyek." : `Gagal menyimpan: ${error.message}`);
-    router.push("/akun/proyek");
+    if (error) return setErr(error.message.includes("row-level security") ? "Akun Anda belum terverifikasi atau tidak berhak memposting project." : `Gagal menyimpan: ${error.message}`);
+    router.push("/akun/project");
   }
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-      <PortalHeader eyebrow="Peluang proyek" title="Posting kebutuhan proyek" desc="Jelaskan pekerjaan yang dibutuhkan. Civitas yang memiliki usaha atau keahlian terkait dapat mengajukan penawaran kepada Anda." />
+      <PortalHeader eyebrow="Peluang project" title="Posting kebutuhan project" desc="Jelaskan pekerjaan yang dibutuhkan. Civitas yang memiliki usaha atau keahlian terkait dapat mengajukan penawaran kepada Anda." />
       {!canPost ? (
-        <Alert tone="error">Posting proyek tersedia untuk akun alumni dan dosen.</Alert>
+        <Alert tone="error">Posting project tersedia untuk akun alumni dan dosen.</Alert>
       ) : (
         <>
-          <PendingNotice me={me} what="memposting proyek" />
+          <PendingNotice me={me} what="memposting project" />
           <Card className="p-6">
             <form onSubmit={submit} className="space-y-5" noValidate>
-              <Field label="Judul proyek" required>
+              <Field label="Judul project" required>
                 <input className={inputCls} value={f.title} onChange={set("title")} maxLength={160} placeholder="Contoh: Pembuatan sistem inventaris gudang, Sewa bus karyawan, Pelatihan Excel untuk staf" />
               </Field>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -98,14 +98,14 @@ export default function PostingProyek() {
                     {(Object.keys(WORK_MODE) as Project["work_mode"][]).map((k) => <option key={k} value={k}>{WORK_MODE[k]}</option>)}
                   </select>
                 </Field>
-                <Field label="Batas pengajuan penawaran" hint="Setelah tanggal ini proyek disembunyikan otomatis.">
+                <Field label="Batas pengajuan penawaran" hint="Setelah tanggal ini project disembunyikan otomatis.">
                   <input className={inputCls} type="date" min={todayLocal()} value={f.deadline} onChange={set("deadline")} />
                 </Field>
               </div>
               {err && <Alert tone="error">{err}</Alert>}
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="ghost" onClick={() => router.push("/akun/proyek")}>Batal</Button>
-                <Button type="submit" disabled={busy || !verified}>{busy ? "Menyimpan…" : "Terbitkan proyek"}</Button>
+                <Button type="button" variant="ghost" onClick={() => router.push("/akun/project")}>Batal</Button>
+                <Button type="submit" disabled={busy || !verified}>{busy ? "Menyimpan…" : "Terbitkan project"}</Button>
               </div>
             </form>
           </Card>

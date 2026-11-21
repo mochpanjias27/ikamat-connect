@@ -147,7 +147,7 @@ export default function Akun() {
             </div>
             <div className="sm:col-span-2"><Field label="Tentang saya"><textarea className={inputCls} rows={4} maxLength={1200} {...d("bio")} /></Field></div>
             <div className="sm:col-span-2">
-              <Field label="Layanan / usaha yang saya tawarkan" hint="Opsional. Contoh: jasa pembuatan aplikasi, konsultan aktuaria, sewa kendaraan, pelatihan Excel. Membuat Anda mudah ditemukan untuk Proyek.">
+              <Field label="Layanan / usaha yang saya tawarkan" hint="Opsional. Contoh: jasa pembuatan aplikasi, konsultan aktuaria, sewa kendaraan, pelatihan Excel. Membuat Anda mudah ditemukan untuk Project.">
                 <textarea className={inputCls} rows={2} maxLength={1000} {...d("services")} />
               </Field>
             </div>
@@ -239,19 +239,19 @@ function QuickActions({ p }: { p: Profile }) {
           { href: "/akun/riset/baru", icon: <Plus size={18} />, title: "Posting kebutuhan riset", desc: "Hibah, mitra riset, atau asisten riset.", primary: true },
           { href: "/akun/jejaring?status=alumni", icon: <UserSearch size={18} />, title: "Cari mitra alumni", desc: "Telusuri alumni berdasarkan keahlian dan instansi." },
           { href: "/akun/lowongan/baru", icon: <Briefcase size={18} />, title: "Posting lowongan", desc: "Bagikan lowongan atau magang untuk mahasiswa." },
-          { href: "/akun/proyek", icon: <Handshake size={18} />, title: "Peluang proyek", desc: `${stats?.projects ?? "…"} proyek aktif dari jejaring.` },
+          { href: "/akun/project", icon: <Handshake size={18} />, title: "Peluang project", desc: `${stats?.projects ?? "…"} project aktif dari jejaring.` },
         ]
       : p.status === "alumni"
         ? [
-            { href: "/akun/lowongan/baru", icon: <Plus size={18} />, title: "Posting lowongan", desc: "Kerja, magang, atau proyek dari tempat Anda.", primary: true },
+            { href: "/akun/lowongan/baru", icon: <Plus size={18} />, title: "Posting lowongan", desc: "Kerja, magang, atau project dari tempat Anda.", primary: true },
             { href: "/akun/riset", icon: <FlaskConical size={18} />, title: "Jadi mitra riset dosen", desc: `${stats?.research ?? "…"} kebutuhan riset aktif.` },
-            { href: "/akun/proyek", icon: <Handshake size={18} />, title: "Peluang proyek", desc: `${stats?.projects ?? "…"} proyek aktif. Posting kebutuhan atau ajukan penawaran.` },
+            { href: "/akun/project", icon: <Handshake size={18} />, title: "Peluang project", desc: `${stats?.projects ?? "…"} project aktif. Posting kebutuhan atau ajukan penawaran.` },
             { href: "/akun/jejaring", icon: <UserSearch size={18} />, title: "Jejaring civitas", desc: "Temukan rekan alumni, dosen, dan talenta mahasiswa." },
           ]
         : [
             { href: "/akun/lowongan", icon: <Briefcase size={18} />, title: "Cari magang & lowongan", desc: `${stats?.jobs ?? "…"} lowongan aktif dari alumni.`, primary: true },
             { href: "/akun/riset", icon: <FlaskConical size={18} />, title: "Riset bersama dosen", desc: `${stats?.research ?? "…"} kesempatan riset aktif.` },
-            { href: "/akun/proyek", icon: <Handshake size={18} />, title: "Peluang proyek", desc: `${stats?.projects ?? "…"} proyek aktif dari alumni.` },
+            { href: "/akun/project", icon: <Handshake size={18} />, title: "Peluang project", desc: `${stats?.projects ?? "…"} project aktif dari alumni.` },
             { href: "/akun/jejaring?status=alumni", icon: <UserSearch size={18} />, title: "Temukan mentor alumni", desc: "Ajak terhubung untuk mentoring karier." },
           ];
 

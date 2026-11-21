@@ -150,7 +150,7 @@ export default function Home() {
                 ["Magang", "Mahasiswa aktif yang sedang mencari magang"],
                 ["Full-time entry level", "Fresh Graduate + civitas berstatus Open to Work"],
                 ["Mid / Senior", "Alumni profesional berstatus Open to Work"],
-                ["Proyek / Konsultansi", "Civitas yang menandai Open to Project"],
+                ["Project / Konsultansi", "Civitas yang menandai Open to Project"],
               ].map(([k, v], i) => (
                 <div key={k} className="bg-white p-6">
                   <p className="text-xs font-bold text-sun-700">ATURAN {i + 1}</p>

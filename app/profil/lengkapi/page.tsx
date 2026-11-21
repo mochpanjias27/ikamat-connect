@@ -56,7 +56,7 @@ const EXP_KIND: { v: NonNullable<Experience["kind"]>; l: string }[] = [
   { v: "kerja", l: "Pekerjaan" },
   { v: "magang", l: "Magang" },
   { v: "asisten", l: "Asisten dosen/praktikum" },
-  { v: "riset", l: "Proyek riset" },
+  { v: "riset", l: "Project riset" },
   { v: "organisasi", l: "Organisasi/kepanitiaan" },
 ];
 
@@ -319,7 +319,7 @@ export default function LengkapiProfil() {
             {/* STEP 3 */}
             {step === 2 && (
               <div className="mt-5 space-y-4">
-                <p className="text-sm text-ink-500">Termasuk magang, asisten praktikum, proyek riset, dan organisasi. Pengalaman non-kerja tetap bernilai bagi perekrut.</p>
+                <p className="text-sm text-ink-500">Termasuk magang, asisten praktikum, project riset, dan organisasi. Pengalaman non-kerja tetap bernilai bagi perekrut.</p>
                 {d.experience.length === 0 && <p className="rounded-xl bg-ink-50 p-4 text-sm text-ink-500">Belum ada pengalaman. Tambahkan minimal satu.</p>}
                 {d.experience.map((e, i) => (
                   <div key={i} className="rounded-2xl p-4 ring-1 ring-ink-200">
@@ -431,7 +431,7 @@ export default function LengkapiProfil() {
                 </div>
                 <div>
                   <p className="mb-1 text-sm font-semibold text-ink-700">Portofolio & publikasi</p>
-                  <p className="mb-3 text-xs text-ink-400">Proyek, dasbor, notebook Kaggle, artikel ilmiah, atau poster riset.</p>
+                  <p className="mb-3 text-xs text-ink-400">Project, dasbor, notebook Kaggle, artikel ilmiah, atau poster riset.</p>
                   <div className="space-y-3">
                     {(d.portfolio ?? []).map((pf, i) => (
                       <div key={i} className="grid gap-3 rounded-2xl p-4 ring-1 ring-ink-200 sm:grid-cols-2">
@@ -466,7 +466,7 @@ export default function LengkapiProfil() {
                   ) : (
                     <Toggle checked={d.openToWork} onChange={(v) => up({ openToWork: v })} label="Open to Work" desc="Anda menerima email lowongan kerja yang relevan." />
                   )}
-                  <Toggle checked={d.openToProject} onChange={(v) => up({ openToProject: v })} label="Open to Project" desc="Terbuka untuk proyek lepas atau konsultansi." />
+                  <Toggle checked={d.openToProject} onChange={(v) => up({ openToProject: v })} label="Open to Project" desc="Terbuka untuk project lepas atau konsultansi." />
                 </div>
                 <Field label="Peran yang diminati">
                   <ChipPicker options={[...T.titles, ...ALL_ROLES.filter((r) => !T.titles.includes(r)).slice(0, 8)]} value={d.preferredRoles ?? []} onChange={(v) => up({ preferredRoles: v })} allowCustom />

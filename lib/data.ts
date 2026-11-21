@@ -399,7 +399,7 @@ function buildPeople(): Person[] {
       seekingInternship: finalYear ? chance(0.85) : chance(0.35),
       collab: chance2(finalYear ? 0.45 : 0.2) ? ["research_assistant"] : [],
       researchTopics: chance2(0.5) ? [T.label] : undefined,
-      portfolio: chance2(0.5) ? [{ title: `Proyek ${T.skills[0]}`, url: "https://github.com/contoh", desc: `Proyek mata kuliah bidang ${T.label.toLowerCase()}` }] : undefined,
+      portfolio: chance2(0.5) ? [{ title: `Project ${T.skills[0]}`, url: "https://github.com/contoh", desc: `Project mata kuliah bidang ${T.label.toLowerCase()}` }] : undefined,
       catalogConsent: finalYear && chance(0.6),
       visibility: finalYear && chance(0.6) ? "recruiters" : "internal",
       email: `${slug(name)}@mail.contoh.id`,
@@ -621,7 +621,7 @@ export const CATEGORY_LABEL: Record<JobCategory, string> = {
   internship: "Magang",
   full_time: "Full-time",
   contract: "Kontrak",
-  project: "Proyek / Konsultansi",
+  project: "Project / Konsultansi",
 };
 export const LEVEL_LABEL: Record<JobLevel, string> = { entry: "Entry level", mid: "Mid level", senior: "Senior" };
 export const AUDIENCE_LABEL: Record<Audience, string> = {
@@ -765,7 +765,7 @@ export const JOBS: Job[] = [
     location: "Remote",
     postedAt: "2026-10-30",
     deadline: "2026-12-10",
-    description: "Proyek 3 bulan merancang model optimasi rute armada untuk 4 gudang regional Jawa Barat.",
+    description: "Project 3 bulan merancang model optimasi rute armada untuk 4 gudang regional Jawa Barat.",
     requirements: ["Pengalaman model VRP/MILP", "Mampu menggunakan Python (OR-Tools/Pyomo)"],
     skills: ["Riset Operasi", "Optimasi", "Pemrograman Linear"],
   }),
@@ -782,7 +782,7 @@ export const JOBS: Job[] = [
     postedAt: "2026-10-18",
     deadline: "2026-11-18",
     description: "Membangun model rekomendasi produk dan eksperimen A/B bersama tim growth.",
-    requirements: ["S1 Matematika/Statistika", "Menguasai Python dan dasar machine learning", "Portofolio proyek data menjadi nilai tambah"],
+    requirements: ["S1 Matematika/Statistika", "Menguasai Python dan dasar machine learning", "Portofolio project data menjadi nilai tambah"],
     skills: ["Python", "Machine Learning", "Statistika"],
     skillFilter: true,
   }),
