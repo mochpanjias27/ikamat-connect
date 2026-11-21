@@ -20,6 +20,7 @@ export default function Jejaring() {
   const [contacts, setContacts] = useState<ContactItem[]>([]);
   const [status, setStatus] = useState<StatusFilter>("semua");
   const [otw, setOtw] = useState(false);
+  const [prov, setProv] = useState(false);
   const [q, setQ] = useState("");
   const [target, setTarget] = useState<DirEntry | null>(null);
   const [purpose, setPurpose] = useState<ContactItem["purpose"]>("riset");
@@ -33,6 +34,7 @@ export default function Jejaring() {
     const s = p.get("status");
     if (s === "alumni" || s === "mahasiswa" || s === "dosen") setStatus(s);
     if (p.get("tab") === "permintaan") setTab("permintaan");
+    if (p.get("penyedia") === "1") setProv(true);
   }, []);
 
   const load = useCallback(async () => {
@@ -62,12 +64,13 @@ export default function Jejaring() {
     let l = people || [];
     if (status !== "semua") l = l.filter((p) => p.status === status);
     if (otw) l = l.filter((p) => p.open_to_work);
+    if (prov) l = l.filter((p) => !!p.services?.trim());
     if (q.trim()) {
       const s = q.toLowerCase();
-      l = l.filter((p) => `${p.full_name} ${p.headline ?? ""} ${p.current_company ?? ""} ${p.current_title ?? ""} ${p.city ?? ""} ${p.skills.join(" ")} ${p.angkatan ?? ""}`.toLowerCase().includes(s));
+      l = l.filter((p) => `${p.full_name} ${p.headline ?? ""} ${p.current_company ?? ""} ${p.current_title ?? ""} ${p.city ?? ""} ${p.skills.join(" ")} ${p.angkatan ?? ""} ${p.services ?? ""}`.toLowerCase().includes(s));
     }
     return l;
-  }, [people, status, otw, q]);
+  }, [people, status, otw, prov, q]);
 
   const incoming = contacts.filter((c) => c.direction === "masuk" && c.status === "menunggu").length;
 
@@ -120,7 +123,7 @@ export default function Jejaring() {
           <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center">
             <div className="relative flex-1">
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-400" />
-              <input className={`${inputCls} pl-9`} placeholder="Cari nama, perusahaan, keahlian, kota, angkatan…" value={q} onChange={(e) => setQ(e.target.value)} />
+              <input className={`${inputCls} pl-9`} placeholder="Cari nama, perusahaan, keahlian, layanan, kota, angkatan…" value={q} onChange={(e) => setQ(e.target.value)} />
             </div>
             <div className="flex flex-wrap gap-2">
               {(["semua", "alumni", "mahasiswa", "dosen"] as StatusFilter[]).map((s) => (
@@ -128,6 +131,9 @@ export default function Jejaring() {
               ))}
               <label className="flex cursor-pointer items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-ink-700 ring-1 ring-inset ring-ink-200">
                 <input type="checkbox" className="accent-sky-600" checked={otw} onChange={(e) => setOtw(e.target.checked)} /> Open to Work / cari magang
+              </label>
+              <label className="flex cursor-pointer items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-ink-700 ring-1 ring-inset ring-ink-200">
+                <input type="checkbox" className="accent-sky-600" checked={prov} onChange={(e) => setProv(e.target.checked)} /> Penyedia jasa
               </label>
             </div>
           </div>
@@ -157,6 +163,9 @@ export default function Jejaring() {
                       {(p.current_title || p.current_company) && <p className="text-sm text-ink-500">{[p.current_title, p.current_company].filter(Boolean).join(" · ")}</p>}
                       {p.city && <p className="mt-1 inline-flex items-center gap-1 text-xs text-ink-400"><MapPin size={12} /> {p.city}</p>}
                       {p.skills.length > 0 && <div className="mt-3 flex flex-wrap gap-1">{p.skills.slice(0, 6).map((s) => <Badge key={s}>{s}</Badge>)}</div>}
+                      {p.services && (
+                        <p className="mt-3 rounded-lg bg-sun-100 px-3 py-2 text-sm text-ink-800"><b>Layanan:</b> {p.services}</p>
+                      )}
                       {p.bio && <p className="mt-3 line-clamp-3 text-sm text-ink-600">{p.bio}</p>}
                       <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
                         {rel?.status === "diterima" ? (

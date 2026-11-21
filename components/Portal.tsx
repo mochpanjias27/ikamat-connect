@@ -66,6 +66,7 @@ export function ResponderList({ items, emptyText }: { items: Responder[] | null;
             <span className="text-xs text-ink-400">{fmtDate(r.created_at)}</span>
           </div>
           {(r.headline || r.current_company) && <p className="text-sm text-ink-600">{[r.headline, r.current_company].filter(Boolean).join(" · ")}</p>}
+          {r.services && <p className="text-sm text-ink-700"><b>Layanan:</b> {r.services}</p>}
           {r.message && <p className="mt-1 whitespace-pre-line rounded-lg bg-ink-50 p-2 text-sm text-ink-700">{r.message}</p>}
           <p className="mt-1 flex flex-wrap gap-x-4 text-sm">
             <a className="break-all font-semibold text-sky-700 underline" href={`mailto:${r.email}`}>{r.email}</a>

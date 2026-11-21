@@ -29,6 +29,7 @@ export type Profile = {
   bio: string | null;
   linkedin_url: string | null;
   open_to_work: boolean;
+  services?: string | null;
   verification_status: "pending" | "verified" | "rejected";
   verification_note: string | null;
   verified_at: string | null;

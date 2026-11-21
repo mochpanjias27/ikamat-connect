@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Briefcase, CheckCircle2, Clock, FlaskConical, LogOut, Plus, ShieldAlert, ShieldCheck, UserSearch, Users } from "lucide-react";
+import { Briefcase, CheckCircle2, Handshake, Clock, FlaskConical, LogOut, Plus, ShieldAlert, ShieldCheck, UserSearch, Users } from "lucide-react";
 import { Badge, Button, Card, inputCls, Toggle } from "@/components/ui";
 import { Alert, Field } from "@/components/AuthShell";
 import { CONSENT_LABEL, ConsentPurpose, Profile, supabaseBrowser } from "@/lib/supabase/client";
 
-const EDITABLE = ["full_name", "npm", "nidn", "angkatan", "tahun_lulus", "phone", "city", "headline", "current_company", "current_title", "bio", "linkedin_url"] as const;
+const EDITABLE = ["full_name", "npm", "nidn", "angkatan", "tahun_lulus", "phone", "city", "headline", "current_company", "current_title", "bio", "linkedin_url", "services"] as const;
 type Editable = (typeof EDITABLE)[number];
 
 export default function Akun() {
@@ -57,6 +57,7 @@ export default function Akun() {
     setMsg(null);
     const patch: Record<string, unknown> = { open_to_work: openToWork, skills: skills.split(",").map((s) => s.trim()).filter(Boolean).slice(0, 30) };
     for (const k of EDITABLE) {
+      if (k === "services" && !("services" in profile)) continue; // kolom tersedia setelah migrasi 0005
       const v = (draft[k] ?? "").trim();
       patch[k] = k === "angkatan" || k === "tahun_lulus" ? (v ? Number(v) : null) : k === "full_name" ? v : v || null;
     }
@@ -145,6 +146,11 @@ export default function Akun() {
               </Field>
             </div>
             <div className="sm:col-span-2"><Field label="Tentang saya"><textarea className={inputCls} rows={4} maxLength={1200} {...d("bio")} /></Field></div>
+            <div className="sm:col-span-2">
+              <Field label="Layanan / usaha yang saya tawarkan" hint="Opsional. Contoh: jasa pembuatan aplikasi, konsultan aktuaria, sewa kendaraan, pelatihan Excel. Membuat Anda mudah ditemukan untuk Proyek.">
+                <textarea className={inputCls} rows={2} maxLength={1000} {...d("services")} />
+              </Field>
+            </div>
             <div className="sm:col-span-2"><Field label="LinkedIn"><input className={inputCls} type="url" placeholder="https://linkedin.com/in/…" {...d("linkedin_url")} /></Field></div>
             {profile.status !== "dosen" && (
               <div className="rounded-xl bg-ink-50 px-4 sm:col-span-2">
@@ -211,17 +217,18 @@ function VerificationBanner({ p }: { p: Profile }) {
 }
 
 function QuickActions({ p }: { p: Profile }) {
-  const [stats, setStats] = useState<{ jobs: number; research: number; incoming: number } | null>(null);
+  const [stats, setStats] = useState<{ jobs: number; research: number; projects: number; incoming: number } | null>(null);
   useEffect(() => {
     const sb = supabaseBrowser();
     (async () => {
       const today = new Date().toISOString().slice(0, 10);
-      const [j, r, c] = await Promise.all([
+      const [j, r, c, x] = await Promise.all([
         sb.from("jobs").select("id", { count: "exact", head: true }).eq("status", "aktif").or(`deadline.is.null,deadline.gte.${today}`),
         sb.from("research_posts").select("id", { count: "exact", head: true }).eq("status", "aktif").or(`deadline.is.null,deadline.gte.${today}`),
         sb.from("contact_requests").select("id", { count: "exact", head: true }).eq("to_id", p.id).eq("status", "menunggu"),
+        sb.from("projects").select("id", { count: "exact", head: true }).eq("status", "aktif").or(`deadline.is.null,deadline.gte.${today}`),
       ]);
-      setStats({ jobs: j.count ?? 0, research: r.count ?? 0, incoming: c.count ?? 0 });
+      setStats({ jobs: j.count ?? 0, research: r.count ?? 0, projects: x.count ?? 0, incoming: c.count ?? 0 });
     })();
   }, [p.id]);
 
@@ -232,16 +239,19 @@ function QuickActions({ p }: { p: Profile }) {
           { href: "/akun/riset/baru", icon: <Plus size={18} />, title: "Posting kebutuhan riset", desc: "Hibah, mitra riset, atau asisten riset.", primary: true },
           { href: "/akun/jejaring?status=alumni", icon: <UserSearch size={18} />, title: "Cari mitra alumni", desc: "Telusuri alumni berdasarkan keahlian dan instansi." },
           { href: "/akun/lowongan/baru", icon: <Briefcase size={18} />, title: "Posting lowongan", desc: "Bagikan lowongan atau magang untuk mahasiswa." },
+          { href: "/akun/proyek", icon: <Handshake size={18} />, title: "Peluang proyek", desc: `${stats?.projects ?? "…"} proyek aktif dari jejaring.` },
         ]
       : p.status === "alumni"
         ? [
             { href: "/akun/lowongan/baru", icon: <Plus size={18} />, title: "Posting lowongan", desc: "Kerja, magang, atau proyek dari tempat Anda.", primary: true },
             { href: "/akun/riset", icon: <FlaskConical size={18} />, title: "Jadi mitra riset dosen", desc: `${stats?.research ?? "…"} kebutuhan riset aktif.` },
+            { href: "/akun/proyek", icon: <Handshake size={18} />, title: "Peluang proyek", desc: `${stats?.projects ?? "…"} proyek aktif. Posting kebutuhan atau ajukan penawaran.` },
             { href: "/akun/jejaring", icon: <UserSearch size={18} />, title: "Jejaring civitas", desc: "Temukan rekan alumni, dosen, dan talenta mahasiswa." },
           ]
         : [
             { href: "/akun/lowongan", icon: <Briefcase size={18} />, title: "Cari magang & lowongan", desc: `${stats?.jobs ?? "…"} lowongan aktif dari alumni.`, primary: true },
             { href: "/akun/riset", icon: <FlaskConical size={18} />, title: "Riset bersama dosen", desc: `${stats?.research ?? "…"} kesempatan riset aktif.` },
+            { href: "/akun/proyek", icon: <Handshake size={18} />, title: "Peluang proyek", desc: `${stats?.projects ?? "…"} proyek aktif dari alumni.` },
             { href: "/akun/jejaring?status=alumni", icon: <UserSearch size={18} />, title: "Temukan mentor alumni", desc: "Ajak terhubung untuk mentoring karier." },
           ];
 
@@ -253,7 +263,7 @@ function QuickActions({ p }: { p: Profile }) {
           <span className="text-sm font-bold">Lihat →</span>
         </Link>
       )}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {actions.map((a) => (
           <Link key={a.href} href={a.href} className={`rounded-2xl p-5 shadow-card ring-1 transition hover:-translate-y-0.5 ${a.primary ? "bg-sky-950 text-white ring-sky-950" : "bg-white text-ink-900 ring-ink-200/60"}`}>
             <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${a.primary ? "bg-sun-400 text-ink-900" : "bg-sky-50 text-sky-700"}`}>{a.icon}</span>

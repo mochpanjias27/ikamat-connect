@@ -37,6 +37,24 @@ export type ResearchPost = {
   created_at: string;
 };
 
+export type Project = {
+  id: string;
+  poster_id: string;
+  title: string;
+  organization: string;
+  category: "teknologi" | "data_analitik" | "konsultansi" | "pelatihan" | "transportasi" | "konstruksi" | "pengadaan" | "kreatif" | "riset_survei" | "lainnya";
+  description: string;
+  scope: string | null;
+  provider_reqs: string | null;
+  budget: string | null;
+  duration: string | null;
+  location: string | null;
+  work_mode: "onsite" | "hybrid" | "remote";
+  deadline: string | null;
+  status: "aktif" | "ditutup";
+  created_at: string;
+};
+
 export type Poster = { id: string; full_name: string; status: string; angkatan: number | null; current_company: string | null };
 
 export type Responder = {
@@ -50,6 +68,7 @@ export type Responder = {
   current_company: string | null;
   linkedin_url: string | null;
   skills: string[];
+  services?: string | null;
   message: string | null;
   created_at: string;
 };
@@ -68,6 +87,7 @@ export type DirEntry = {
   bio: string | null;
   linkedin_url: string | null;
   open_to_work: boolean;
+  services?: string | null;
 };
 
 export type ContactItem = {
@@ -86,6 +106,18 @@ export type ContactItem = {
 
 export const JOB_CAT: Record<Job["category"], string> = { kerja: "Kerja", magang: "Magang", freelance: "Freelance / Proyek" };
 export const WORK_MODE: Record<Job["work_mode"], string> = { onsite: "Di kantor", hybrid: "Hybrid", remote: "Remote" };
+export const PROJECT_CAT: Record<Project["category"], string> = {
+  teknologi: "Teknologi & software",
+  data_analitik: "Data & analitik",
+  konsultansi: "Konsultansi",
+  pelatihan: "Pelatihan & training",
+  transportasi: "Transportasi & logistik",
+  konstruksi: "Konstruksi & kontraktor",
+  pengadaan: "Pengadaan barang",
+  kreatif: "Desain & kreatif",
+  riset_survei: "Riset & survei",
+  lainnya: "Lainnya",
+};
 export const SCHEME: Record<ResearchPost["scheme"], string> = {
   mitra_riset: "Mitra riset",
   hibah: "Hibah bersama",
